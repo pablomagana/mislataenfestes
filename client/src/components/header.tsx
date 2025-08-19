@@ -1,6 +1,7 @@
 import { Search, Heart, Calendar, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import mislataEscudo from "@/assets/mislata-escudo.svg";
 
 interface HeaderProps {
   searchQuery: string;
@@ -23,9 +24,13 @@ export default function Header({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <i className="fas fa-star text-festival-orange text-2xl"></i>
-                <h1 className="text-xl font-display font-bold text-gray-800">Eventos</h1>
+              <div className="flex items-center space-x-3">
+                <img 
+                  src={mislataEscudo} 
+                  alt="Escudo de Mislata" 
+                  className="w-8 h-10"
+                />
+                <h1 className="text-xl font-display font-bold text-gray-800">Festes Mislata</h1>
               </div>
             </div>
             
