@@ -32,9 +32,23 @@ export const initGA = () => {
   document.head.appendChild(script2);
 };
 
+// Check if analytics consent is given
+const hasAnalyticsConsent = () => {
+  try {
+    const consent = localStorage.getItem('cookie-consent');
+    if (consent) {
+      const parsed = JSON.parse(consent);
+      return parsed.analytics === true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+};
+
 // Track page views - useful for single-page applications
 export const trackPageView = (url: string) => {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (typeof window === 'undefined' || !window.gtag || !hasAnalyticsConsent()) return;
   
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
   if (!measurementId) return;
@@ -51,7 +65,7 @@ export const trackEvent = (
   label?: string, 
   value?: number
 ) => {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (typeof window === 'undefined' || !window.gtag || !hasAnalyticsConsent()) return;
   
   window.gtag('event', action, {
     event_category: category,

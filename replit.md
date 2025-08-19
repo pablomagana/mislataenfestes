@@ -51,3 +51,30 @@ The core entity is `FestivalEvent` with properties:
 - **Date Handling**: date-fns library with Spanish locale support
 - **Development**: Replit-specific plugins for cartographer and runtime error handling
 - **Fonts**: Google Fonts integration (Inter, Playfair Display, and additional typography)
+- **Analytics**: Google Analytics 4 with consent-based tracking
+- **Privacy**: Cookie consent management with granular preferences
+
+## Privacy & Analytics
+
+### Google Analytics Integration
+- **Implementation Date**: August 19, 2025
+- **Configuration**: Google Analytics 4 (GA4) with measurement ID via environment variable
+- **Consent Management**: Cookie consent system with granular controls
+- **Privacy Compliance**: Analytics only active when user explicitly consents to analytics cookies
+
+### Cookie Consent System
+- **Banner Design**: Festival-themed cookie banner using custom orange color scheme
+- **Consent Categories**: 
+  - Necessary cookies (always enabled)
+  - Analytics cookies (Google Analytics tracking)
+  - Marketing cookies (future advertising features)
+- **Persistence**: Consent preferences stored in localStorage
+- **User Experience**: Non-intrusive bottom banner with customizable settings modal
+
+## Recent Changes
+
+### August 19, 2025
+- **Google Analytics**: Integrated GA4 with consent-based initialization
+- **Cookie Banner**: Added comprehensive cookie consent management
+- **Privacy Compliance**: Analytics tracking respects user consent preferences
+- **UI Enhancement**: Cookie banner matches festival design with orange theme
