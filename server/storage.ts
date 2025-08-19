@@ -244,7 +244,7 @@ export class MemStorage implements IStorage {
         type: "tradicional",
         status: "upcoming",
         description: null,
-        order: null
+        order: "2"
       },
       {
         id: "fp016",
@@ -257,7 +257,7 @@ export class MemStorage implements IStorage {
         type: "tradicional",
         status: "upcoming",
         description: "Pirotecnia Valenciana",
-        order: null
+        order: "3"
       },
       {
         id: "fp017",
@@ -270,7 +270,7 @@ export class MemStorage implements IStorage {
         type: "procesión",
         status: "upcoming",
         description: "Recorrido: Pza. de la Constitución, C/ Estación, Av. Gregorio Gea, C/ Murillo, continuando por recorrido habitual hasta Pza. de la Constitución",
-        order: null
+        order: "4"
       },
       {
         id: "fp018",
@@ -283,7 +283,7 @@ export class MemStorage implements IStorage {
         type: "tradicional",
         status: "upcoming",
         description: "Recorrido: Centro histórico de la población",
-        order: null
+        order: "1"
       },
       {
         id: "fp019",
