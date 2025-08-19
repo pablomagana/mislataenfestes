@@ -132,7 +132,7 @@ export default function CalendarModal({
                   onClick={() => handleDayClick(date)}
                   disabled={!hasEvents}
                   className={`
-                    relative aspect-square p-0.5 sm:p-1 text-xs sm:text-sm rounded-md sm:rounded-lg transition-all
+                    relative aspect-square p-0.5 sm:p-1 text-xs sm:text-sm rounded-full transition-all
                     ${isInPeriod 
                       ? hasEvents 
                         ? `${colorClass} text-white hover:opacity-80 cursor-pointer shadow-sm`
@@ -147,7 +147,7 @@ export default function CalendarModal({
                       {format(date, 'd')}
                     </span>
                     {hasFavorites && (
-                      <Heart className="w-2 h-2 sm:w-3 sm:h-3 fill-current absolute top-0 right-0 sm:top-0.5 sm:right-0.5" />
+                      <Heart className="w-2 h-2 sm:w-3 sm:h-3 fill-red-500 text-red-500 absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0" />
                     )}
                   </div>
                 </button>
@@ -155,10 +155,7 @@ export default function CalendarModal({
             })}
           </div>
 
-          {/* Info text */}
-          <div className="mt-3 text-xs text-gray-500 text-center px-2">
-            Haz clic en un día con eventos para navegar hasta esa fecha
-          </div>
+
         </div>
       </DialogContent>
     </Dialog>
