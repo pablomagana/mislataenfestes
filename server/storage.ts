@@ -440,7 +440,7 @@ export class MemStorage implements IStorage {
         type: "infantil",
         status: "upcoming",
         description: null,
-        order: null
+        order: "1"
       },
       {
         id: "fpop009",
@@ -453,7 +453,7 @@ export class MemStorage implements IStorage {
         type: "concierto",
         status: "upcoming",
         description: null,
-        order: null
+        order: "2"
       },
       {
         id: "fpop010",
@@ -466,7 +466,7 @@ export class MemStorage implements IStorage {
         type: "gastronómico",
         status: "upcoming",
         description: "En colaboración con la Penya Els Tronats",
-        order: null
+        order: "3"
       },
       {
         id: "fpop011",
@@ -479,7 +479,7 @@ export class MemStorage implements IStorage {
         type: "concierto",
         status: "upcoming",
         description: null,
-        order: null
+        order: "4"
       },
       {
         id: "fpop012",
@@ -492,7 +492,7 @@ export class MemStorage implements IStorage {
         type: "música",
         status: "upcoming",
         description: null,
-        order: null
+        order: "5"
       },
       {
         id: "fpop013",
