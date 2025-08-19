@@ -82,21 +82,21 @@ export default function CalendarModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Calendario de Festes</DialogTitle>
+          <DialogTitle className="text-center">Calendario de Festes</DialogTitle>
         </DialogHeader>
         
-        <div className="p-4">
+        <div className="px-2 sm:px-4 pb-4">
           {/* Month headers */}
-          <div className="text-center mb-4">
-            <div className="text-lg font-semibold text-gray-700">
+          <div className="text-center mb-3">
+            <div className="text-base sm:text-lg font-semibold text-gray-700">
               Agosto - Septiembre 2025
             </div>
           </div>
 
           {/* Legend */}
-          <div className="flex justify-center gap-4 mb-4 text-xs">
+          <div className="flex justify-center gap-3 sm:gap-4 mb-3 text-xs">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-green-500 rounded"></div>
               <span>Patronales</span>
@@ -108,16 +108,16 @@ export default function CalendarModal({
           </div>
 
           {/* Week day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-2">
             {weekDays.map(day => (
-              <div key={day} className="text-center text-sm font-medium text-gray-500 p-2">
+              <div key={day} className="text-center text-xs sm:text-sm font-medium text-gray-500 p-1 sm:p-2">
                 {day}
               </div>
             ))}
           </div>
 
           {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
             {allDays.map(date => {
               const dateStr = format(date, 'yyyy-MM-dd');
               const dayEvents = eventsByDate[dateStr] || [];
@@ -132,7 +132,7 @@ export default function CalendarModal({
                   onClick={() => handleDayClick(date)}
                   disabled={!hasEvents}
                   className={`
-                    relative aspect-square p-1 text-sm rounded-lg transition-all
+                    relative aspect-square p-0.5 sm:p-1 text-xs sm:text-sm rounded-md sm:rounded-lg transition-all
                     ${isInPeriod 
                       ? hasEvents 
                         ? `${colorClass} text-white hover:opacity-80 cursor-pointer shadow-sm`
@@ -147,7 +147,7 @@ export default function CalendarModal({
                       {format(date, 'd')}
                     </span>
                     {hasFavorites && (
-                      <Heart className="w-3 h-3 fill-current absolute top-0.5 right-0.5" />
+                      <Heart className="w-2 h-2 sm:w-3 sm:h-3 fill-current absolute top-0 right-0 sm:top-0.5 sm:right-0.5" />
                     )}
                   </div>
                 </button>
@@ -156,7 +156,7 @@ export default function CalendarModal({
           </div>
 
           {/* Info text */}
-          <div className="mt-4 text-xs text-gray-500 text-center">
+          <div className="mt-3 text-xs text-gray-500 text-center px-2">
             Haz clic en un día con eventos para navegar hasta esa fecha
           </div>
         </div>
