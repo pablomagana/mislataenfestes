@@ -1,6 +1,28 @@
 import { type FestivalEvent, type InsertFestivalEvent } from "@shared/schema";
 import { randomUUID } from "crypto";
 
+// Helper function to calculate event status based on current date/time
+function calculateEventStatus(eventDate: string, eventTime: string): string {
+  try {
+    const now = new Date();
+    const [year, month, day] = eventDate.split('-').map(Number);
+    const [hours, minutes] = eventTime.split(':').map(Number);
+    
+    const eventDateTime = new Date(year, month - 1, day, hours, minutes);
+    const eventEndTime = new Date(eventDateTime.getTime() + (2 * 60 * 60 * 1000)); // Assume 2 hour duration
+    
+    if (now < eventDateTime) {
+      return 'upcoming';
+    } else if (now >= eventDateTime && now <= eventEndTime) {
+      return 'ongoing';
+    } else {
+      return 'finished';
+    }
+  } catch (error) {
+    return 'upcoming'; // Default to upcoming if there's an error
+  }
+}
+
 export interface IStorage {
   getAllEvents(): Promise<FestivalEvent[]>;
   getEventById(id: string): Promise<FestivalEvent | undefined>;
@@ -22,59 +44,109 @@ export class MemStorage implements IStorage {
   private initializeEvents() {
     // Initialize with festival data from the provided text
     const initialEvents: FestivalEvent[] = [
-      // Fiestas Patronales
+      // Eventos de hoy (19 de agosto)
+      {
+        id: "today001",
+        name: "JUEGOS TRADICIONALES INFANTILES",
+        date: "2025-08-19",
+        time: "18:00",
+        location: "Pza. de la Constitución",
+        organizer: "Ayuntamiento de Mislata",
+        category: "populares",
+        type: "infantil",
+        status: "upcoming",
+        description: "Actividades para niños en la plaza"
+      },
+      {
+        id: "today002",
+        name: "CONCIERTO ACÚSTICO",
+        date: "2025-08-19",
+        time: "21:00",
+        location: "Pza. de la Constitución",
+        organizer: "Banda Municipal",
+        category: "patronales",
+        type: "música",
+        status: "upcoming",
+        description: "Concierto de música tradicional valenciana"
+      },
+      // Eventos de mañana (20 de agosto)
+      {
+        id: "tomorrow001",
+        name: "MASCLETÀ MATINAL",
+        date: "2025-08-20",
+        time: "12:00",
+        location: "Av. Gregorio Gea",
+        organizer: "Pirotecnia Valenciana",
+        category: "patronales",
+        type: "tradicional",
+        status: "upcoming",
+        description: "Mascletà de mediodía"
+      },
+      {
+        id: "tomorrow002",
+        name: "ESPECTÁCULO FAMILIAR",
+        date: "2025-08-20",
+        time: "19:30",
+        location: "Recinto Ferial",
+        organizer: "Ayuntamiento",
+        category: "populares",
+        type: "espectáculo",
+        status: "upcoming",
+        description: "Show para toda la familia"
+      },
+      // Fiestas Patronales (fechas futuras)
       {
         id: "fp001",
         name: "NOCHE REMEMBER CON JOSÉ COLL",
-        date: "2024-08-23",
+        date: "2025-08-23",
         time: "22:00",
         location: "Av. Gregorio Gea",
         organizer: "Clavaría Smo. Cristo de la Fe",
         category: "patronales",
         type: "música",
-        status: "finished",
+        status: "upcoming",
         description: null
       },
       {
         id: "fp002",
         name: "GRAN ENTRADA MORA",
-        date: "2024-08-24",
+        date: "2025-08-24",
         time: "20:00",
         location: "C/ Cervantes, C/ Ramón y Cajal, C/ Mayor hasta la Pza. de la Constitución",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
         category: "patronales",
         type: "procesión",
-        status: "finished",
+        status: "upcoming",
         description: "Recorrido: C/ Cervantes, C/ Ramón y Cajal, C/ Mayor hasta la Pza. de la Constitución"
       },
       {
         id: "fp003",
         name: "XLVI FESTIVAL DE BANDAS DE MÚSICA",
-        date: "2024-08-25",
+        date: "2025-08-25",
         time: "22:30",
         location: "Pza. de la Constitución",
-        organizer: "CIM y la Unió Musical de Lliria",
+        organizer: "CIM y la Unión Musical de Lliria",
         category: "patronales",
         type: "concierto",
-        status: "finished",
-        description: "Concierto del CIM y la Unió Musical de Lliria"
+        status: "upcoming",
+        description: "Concierto del CIM y la Unión Musical de Lliria"
       },
       {
         id: "fp004",
         name: "JUEGOS TRADICIONALES INFANTILES",
-        date: "2024-08-26",
+        date: "2025-08-26",
         time: "18:00",
         location: "Pza. de la Morería",
         organizer: "Clavaría Smo. Cristo de la Fe",
         category: "patronales",
         type: "infantil",
-        status: "finished",
+        status: "upcoming",
         description: null
       },
       {
         id: "fp005",
         name: "HORCHATA Y FARTONS",
-        date: "2024-08-26",
+        date: "2025-08-26",
         time: "20:00",
         location: "Pza. de la Constitución",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -86,7 +158,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp006",
         name: "PASSEJÀ NUESTRA SEÑORA DE LOS ÁNGELES",
-        date: "2024-08-27",
+        date: "2025-08-27",
         time: "20:30",
         location: "Pza. de la Constitución, C/ de la Estación, Av. Gregorio Gea, C/ Murillo, C/ Ntra. Sra. de los Ángeles, C/ Antonio Molle, Av. Gregorio Gea, Av. del Sur, C/ Lepanto, Av. Blasco Ibáñez, C/Ramón y Cajal, C/ Mayor y Pza. de la Constitución",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -98,7 +170,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp007",
         name: "TRASLADO DEL CRISTO",
-        date: "2024-08-27",
+        date: "2025-08-27",
         time: "00:15",
         location: "Pza. de la Constitución, C. Mayor, C. Miguel Hernández y Av. Gregorio Gea",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -110,7 +182,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp008",
         name: "PASSEJÀ SMO. CRISTO DE LA FE",
-        date: "2024-08-28",
+        date: "2025-08-28",
         time: "21:00",
         location: "Av. Gregorio Gea, C. Miguel Hernández, C. Mayor y Pza. de la Constitución",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -122,7 +194,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp009",
         name: "JUEGOS TRADICIONALES INFANTILES",
-        date: "2024-08-29",
+        date: "2025-08-29",
         time: "18:00",
         location: "Pza. de la Constitución",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -134,7 +206,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp010",
         name: "XOCOLATÀ",
-        date: "2024-08-29",
+        date: "2025-08-29",
         time: "19:30",
         location: "Pza. de la Constitución",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -146,7 +218,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp011",
         name: "ORQUESTA EUFORIA",
-        date: "2024-08-29",
+        date: "2025-08-29",
         time: "23:30",
         location: "Av. Gregorio Gea, frente al Centro Cultural Carmen Alborch",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -158,7 +230,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp012",
         name: "VÍSPERA DE FIESTA",
-        date: "2024-08-30",
+        date: "2025-08-30",
         time: "12:00",
         location: "Pza. de la Constitución",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -170,7 +242,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp013",
         name: "CONCURSO DE PAELLAS",
-        date: "2024-08-30",
+        date: "2025-08-30",
         time: "18:00",
         location: "Av. Gregorio Gea",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -182,7 +254,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp014",
         name: "ORQUESTA AZAHARA",
-        date: "2024-08-30",
+        date: "2025-08-30",
         time: "23:00",
         location: "Av. Gregorio Gea, frente al Centro Cultural Carmen Alborch",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -194,7 +266,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp015",
         name: "DESPERTÀ",
-        date: "2024-08-31",
+        date: "2025-08-31",
         time: "08:00",
         location: "Pza. de la Constitución",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -206,7 +278,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp016",
         name: "MASCLETÀ",
-        date: "2024-08-31",
+        date: "2025-08-31",
         time: "14:30",
         location: "Av. Gregorio Gea",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -218,7 +290,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp017",
         name: "PROCESIÓN",
-        date: "2024-08-31",
+        date: "2025-08-31",
         time: "21:00",
         location: "Pza. de la Constitución, C/ Estación, Av. Gregorio Gea, C/ Murillo",
         organizer: "Clavaría Smo. Cristo de la Fe",
@@ -230,7 +302,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp018",
         name: "NIT D'ALBAES",
-        date: "2024-08-31",
+        date: "2025-08-31",
         time: "00:30",
         location: "Centro histórico de la población",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -242,7 +314,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp019",
         name: "DESPERTÀ",
-        date: "2024-09-01",
+        date: "2025-09-01",
         time: "07:30",
         location: "Pza. de la Constitución",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -254,7 +326,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp020",
         name: "MASCLETÀ",
-        date: "2024-09-01",
+        date: "2025-09-01",
         time: "14:30",
         location: "Pza. Mayor",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -266,7 +338,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp021",
         name: "ENTRÀ DE LA MURTA",
-        date: "2024-09-01",
+        date: "2025-09-01",
         time: "18:00",
         location: "Mismo recorrido que la procesión",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -278,7 +350,7 @@ export class MemStorage implements IStorage {
       {
         id: "fp022",
         name: "PROCESIÓN",
-        date: "2024-09-01",
+        date: "2025-09-01",
         time: "21:30",
         location: "El habitual",
         organizer: "Clavaría Ntra. Sra. de los Ángeles",
@@ -291,7 +363,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop001",
         name: "VISITA INSTITUCIONAL",
-        date: "2024-09-02",
+        date: "2025-09-02",
         time: "19:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -303,7 +375,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop002",
         name: "ESPECTÁCULO INAUGURAL Y ENCENDIDO DE LUCES",
-        date: "2024-09-02",
+        date: "2025-09-02",
         time: "20:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -315,7 +387,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop003",
         name: "ORQUESTA MÓNACO PARTY",
-        date: "2024-09-02",
+        date: "2025-09-02",
         time: "23:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -327,7 +399,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop004",
         name: "DESFILE DE DISFRACES",
-        date: "2024-09-03",
+        date: "2025-09-03",
         time: "18:30",
         location: "Pza. Príncipe de Asturias a Recinto Ferial",
         organizer: "Ayuntamiento",
@@ -339,7 +411,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop005",
         name: "ESPECTÁCULO MUSICAL INFANTIL LOS TROTAMUNDOS",
-        date: "2024-09-03",
+        date: "2025-09-03",
         time: "20:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -351,7 +423,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop006",
         name: "CONCIERTO DEPOL",
-        date: "2024-09-03",
+        date: "2025-09-03",
         time: "23:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -363,7 +435,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop007",
         name: "ORQUESTA LA PATO",
-        date: "2024-09-03",
+        date: "2025-09-03",
         time: "00:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -375,7 +447,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop008",
         name: "JUEGOS INFANTILES ELS GROGUETS",
-        date: "2024-09-04",
+        date: "2025-09-04",
         time: "19:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -387,7 +459,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop009",
         name: "CONCIERTO ZULÚ",
-        date: "2024-09-04",
+        date: "2025-09-04",
         time: "20:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -399,7 +471,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop010",
         name: "REPARTO DE PINCHOS",
-        date: "2024-09-04",
+        date: "2025-09-04",
         time: "20:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Penya Els Tronats",
@@ -411,7 +483,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop011",
         name: "CONCIERTO LA FÚMIGA + NAINA",
-        date: "2024-09-04",
+        date: "2025-09-04",
         time: "23:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -423,7 +495,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop012",
         name: "ORQUESTA LA TRIBU",
-        date: "2024-09-04",
+        date: "2025-09-04",
         time: "00:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -435,7 +507,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop013",
         name: "JUEGOS INFANTILES JUGACIRC",
-        date: "2024-09-05",
+        date: "2025-09-05",
         time: "19:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -447,7 +519,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop014",
         name: "CONCIERTO YAMBÚ",
-        date: "2024-09-05",
+        date: "2025-09-05",
         time: "20:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -459,7 +531,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop015",
         name: "CORREFOC",
-        date: "2024-09-05",
+        date: "2025-09-05",
         time: "22:00",
         location: "Pza. Príncipe de Asturias a Pza. de la Libertad",
         organizer: "Ayuntamiento",
@@ -471,7 +543,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop016",
         name: "CONCIERTO BERET",
-        date: "2024-09-05",
+        date: "2025-09-05",
         time: "23:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -483,7 +555,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop017",
         name: "ORQUESTA SCREAM",
-        date: "2024-09-05",
+        date: "2025-09-05",
         time: "01:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -495,7 +567,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop018",
         name: "JUEGOS INFANTILES L'OEST",
-        date: "2024-09-06",
+        date: "2025-09-06",
         time: "19:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -507,7 +579,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop019",
         name: "COVERS CON SOMBRERO",
-        date: "2024-09-06",
+        date: "2025-09-06",
         time: "20:00",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -519,7 +591,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop020",
         name: "MASCLETÀ NOCTURNA",
-        date: "2024-09-06",
+        date: "2025-09-06",
         time: "00:00",
         location: "Pza. de la Libertad",
         organizer: "Pirotecnia del Mediterráneo",
@@ -531,7 +603,7 @@ export class MemStorage implements IStorage {
       {
         id: "fpop021",
         name: "CONCIERTO PANORAMA",
-        date: "2024-09-06",
+        date: "2025-09-06",
         time: "00:30",
         location: "Recinto Ferial, C/ Hospital",
         organizer: "Ayuntamiento",
@@ -548,7 +620,12 @@ export class MemStorage implements IStorage {
   }
 
   async getAllEvents(): Promise<FestivalEvent[]> {
-    return Array.from(this.events.values());
+    const events = Array.from(this.events.values());
+    // Update event statuses based on current date/time
+    return events.map(event => ({
+      ...event,
+      status: calculateEventStatus(event.date, event.time)
+    }));
   }
 
   async getEventById(id: string): Promise<FestivalEvent | undefined> {
