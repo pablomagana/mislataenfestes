@@ -1,6 +1,6 @@
 import { X, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 
@@ -19,12 +19,17 @@ export default function FavoritesModal({
 }: FavoritesModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-xl m-0 rounded-none h-full">
+      <DialogContent className="max-w-md mx-4 my-8 max-h-[80vh] bg-white shadow-xl rounded-lg">
         <DialogHeader className="p-6 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <DialogTitle className="text-xl font-semibold text-gray-800">
-              Eventos Favoritos
-            </DialogTitle>
+            <div>
+              <DialogTitle className="text-xl font-semibold text-gray-800">
+                Eventos Favoritos
+              </DialogTitle>
+              <DialogDescription className="text-sm text-gray-600 mt-1">
+                Tus eventos marcados como favoritos
+              </DialogDescription>
+            </div>
             <Button
               variant="ghost"
               size="icon"
@@ -36,7 +41,7 @@ export default function FavoritesModal({
           </div>
         </DialogHeader>
         
-        <div className="p-6 space-y-4 overflow-y-auto flex-1">
+        <div className="p-6 space-y-4 overflow-y-auto max-h-96">
           {favoriteEvents.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-500 text-lg">No tienes eventos favoritos</div>
