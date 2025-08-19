@@ -1,4 +1,4 @@
-import { Search, Heart, Calendar } from "lucide-react";
+import { Search, Heart, Calendar, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -37,9 +37,19 @@ export default function Header({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Buscar eventos..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
                 />
                 <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-1 top-1 h-8 w-8 p-0 hover:bg-gray-100"
+                  >
+                    <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -72,16 +82,37 @@ export default function Header({
 
       {/* Mobile Search Bar */}
       {showMobileSearch && (
-        <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+        <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3 sticky top-16 z-40 shadow-sm">
           <div className="relative">
             <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar eventos..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
+              className="w-full pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
+              autoFocus
             />
             <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+            <div className="absolute right-2 top-1 flex space-x-1">
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchQuery("")}
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                >
+                  <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowMobileSearch(false)}
+                className="h-8 w-8 p-0 hover:bg-gray-100"
+              >
+                <X className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+              </Button>
+            </div>
           </div>
         </div>
       )}
