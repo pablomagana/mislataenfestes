@@ -174,21 +174,14 @@ export default function Home() {
         )}
       </main>
 
-      {/* Floating Action Buttons */}
-      <div className="fixed bottom-6 right-6 space-y-3">
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6">
         <Button
           onClick={scrollToTop}
           className="bg-white text-gray-600 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
           size="icon"
         >
           <ArrowUp className="w-5 h-5" />
-        </Button>
-        <Button
-          onClick={() => setShowFavoritesModal(true)}
-          className="bg-festival-red text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
-          size="icon"
-        >
-          <Heart className="w-5 h-5" />
         </Button>
       </div>
 
