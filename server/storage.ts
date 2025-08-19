@@ -4,16 +4,21 @@ import { randomUUID } from "crypto";
 // Helper function to calculate event status based on current date/time
 function calculateEventStatus(eventDate: string, eventTime: string): string {
   try {
+    // Get current time and adjust for Spanish timezone (UTC+2 in August)
     const now = new Date();
+    const spanishOffset = 2; // UTC+2 for Spanish summer time in August
+    const spanishTime = new Date(now.getTime() + (spanishOffset * 60 * 60 * 1000));
+    
     const [year, month, day] = eventDate.split('-').map(Number);
     const [hours, minutes] = eventTime.split(':').map(Number);
     
-    const eventDateTime = new Date(year, month - 1, day, hours, minutes);
+    // Create event datetime
+    const eventDateTime = new Date(Date.UTC(year, month - 1, day, hours - spanishOffset, minutes));
     const eventEndTime = new Date(eventDateTime.getTime() + (2 * 60 * 60 * 1000)); // Assume 2 hour duration
     
-    if (now < eventDateTime) {
+    if (spanishTime < eventDateTime) {
       return 'upcoming';
-    } else if (now >= eventDateTime && now <= eventEndTime) {
+    } else if (spanishTime >= eventDateTime && spanishTime <= eventEndTime) {
       return 'ongoing';
     } else {
       return 'finished';
@@ -68,6 +73,30 @@ export class MemStorage implements IStorage {
         type: "música",
         status: "upcoming",
         description: "Concierto de música tradicional valenciana"
+      },
+      {
+        id: "today003",
+        name: "VERBENA NOCTURNA",
+        date: "2025-08-19",
+        time: "23:30",
+        location: "Recinto Ferial",
+        organizer: "DJ Local",
+        category: "populares",
+        type: "baile",
+        status: "upcoming",
+        description: "Baile popular con música en vivo"
+      },
+      {
+        id: "today004",
+        name: "ESPECTÁCULO DE FUEGOS ARTIFICIALES",
+        date: "2025-08-19",
+        time: "23:15",
+        location: "Av. Gregorio Gea",
+        organizer: "Pirotecnia San José",
+        category: "patronales",
+        type: "pirotecnia",
+        status: "upcoming",
+        description: "Castillo de fuegos artificiales de clausura"
       },
       // Eventos de mañana (20 de agosto)
       {
@@ -656,7 +685,7 @@ export class MemStorage implements IStorage {
 
   async createEvent(insertEvent: InsertFestivalEvent): Promise<FestivalEvent> {
     const id = insertEvent.id || randomUUID();
-    const event: FestivalEvent = { ...insertEvent, id };
+    const event: FestivalEvent = { ...insertEvent, id, description: insertEvent.description || null };
     this.events.set(id, event);
     return event;
   }
