@@ -30,14 +30,9 @@ export default function Header({
                   alt="Escudo de Mislata" 
                   className="w-8 h-10 drop-shadow-sm"
                 />
-                <div className="flex flex-col">
-                  <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-festival-red to-festival-orange bg-clip-text text-transparent leading-tight">
-                    Festes Mislata
-                  </h1>
-                  <div className="text-xs text-gray-500 font-medium tracking-wide">
-                    2024
-                  </div>
-                </div>
+                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-festival-red to-festival-orange bg-clip-text text-transparent leading-tight">
+                  Festes Mislata
+                </h1>
               </div>
             </div>
             
