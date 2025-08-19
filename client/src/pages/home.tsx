@@ -195,7 +195,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="mt-16 pb-8 text-center">
         <p className="text-gray-500 text-sm">
-          The por{' '}
+          Desarrollada por {' '}
           <a 
             href="https://pablomagana.es" 
             target="_blank" 

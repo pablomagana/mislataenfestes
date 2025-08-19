@@ -28,9 +28,16 @@ export default function Header({
                 <img 
                   src={mislataEscudo} 
                   alt="Escudo de Mislata" 
-                  className="w-8 h-10"
+                  className="w-8 h-10 drop-shadow-sm"
                 />
-                <h1 className="text-xl font-display font-bold text-gray-800">Festes Mislata</h1>
+                <div className="flex flex-col">
+                  <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-festival-red to-festival-orange bg-clip-text text-transparent leading-tight">
+                    Festes Mislata
+                  </h1>
+                  <div className="text-xs text-gray-500 font-medium tracking-wide">
+                    2024
+                  </div>
+                </div>
               </div>
             </div>
             
