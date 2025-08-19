@@ -14,6 +14,7 @@ export const festivalEvents = pgTable("festival_events", {
   type: text("type").notNull(), // 'música', 'procesión', 'concierto', etc.
   status: text("status").notNull(), // 'upcoming', 'ongoing', 'finished'
   description: text("description"),
+  order: text("order"), // Optional field for custom ordering within the same date
 });
 
 export const insertFestivalEventSchema = createInsertSchema(festivalEvents);

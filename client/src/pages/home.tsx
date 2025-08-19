@@ -38,7 +38,13 @@ export default function Home() {
   const todayEvents = useMemo(() => {
     return filteredEvents
       .filter(event => event.date === today)
-      .sort((a, b) => a.time.localeCompare(b.time));
+      .sort((a, b) => {
+        // Use order field if available, otherwise fallback to time sorting
+        if (a.order && b.order) {
+          return a.order.localeCompare(b.order);
+        }
+        return a.time.localeCompare(b.time);
+      });
   }, [filteredEvents, today]);
 
   // Get future events (tomorrow and onwards)
@@ -47,6 +53,10 @@ export default function Home() {
       .filter(event => event.date > today)
       .sort((a, b) => {
         if (a.date === b.date) {
+          // Use order field if available, otherwise fallback to time sorting
+          if (a.order && b.order) {
+            return a.order.localeCompare(b.order);
+          }
           return a.time.localeCompare(b.time);
         }
         return a.date.localeCompare(b.date);

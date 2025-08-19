@@ -61,7 +61,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "música",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp002",
@@ -73,7 +74,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "procesión",
         status: "upcoming",
-        description: "Recorrido: C/ Cervantes, C/ Ramón y Cajal, C/ Mayor hasta la Pza. de la Constitución"
+        description: "Recorrido: C/ Cervantes, C/ Ramón y Cajal, C/ Mayor hasta la Pza. de la Constitución",
+        order: null
       },
       {
         id: "fp003",
@@ -85,7 +87,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "concierto",
         status: "upcoming",
-        description: "Concierto del CIM y la Unión Musical de Lliria"
+        description: "Concierto del CIM y la Unión Musical de Lliria",
+        order: null
       },
       {
         id: "fp004",
@@ -97,7 +100,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "infantil",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp005",
@@ -109,7 +113,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "gastronómico",
         status: "finished",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp006",
@@ -121,7 +126,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "procesión",
         status: "finished",
-        description: "Recorrido por el centro histórico"
+        description: "Recorrido por el centro histórico",
+        order: "1"
       },
       {
         id: "fp007",
@@ -133,7 +139,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "procesión",
         status: "finished",
-        description: "Recorrido: Pza. de la Constitución, C. Mayor, C. Miguel Hernández y Av. Gregorio Gea"
+        description: "Recorrido: Pza. de la Constitución, C. Mayor, C. Miguel Hernández y Av. Gregorio Gea",
+        order: "2"
       },
       {
         id: "fp008",
@@ -145,7 +152,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "procesión",
         status: "finished",
-        description: "Recorrido: Av. Gregorio Gea, C. Miguel Hernández, C. Mayor y Pza. de la Constitución"
+        description: "Recorrido: Av. Gregorio Gea, C. Miguel Hernández, C. Mayor y Pza. de la Constitución",
+        order: null
       },
       {
         id: "fp009",
@@ -157,7 +165,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "infantil",
         status: "finished",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp010",
@@ -169,7 +178,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "gastronómico",
         status: "finished",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp011",
@@ -181,7 +191,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "música",
         status: "finished",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp012",
@@ -193,7 +204,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "finished",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp013",
@@ -205,7 +217,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "gastronómico",
         status: "finished",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp014",
@@ -217,7 +230,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "música",
         status: "ongoing",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp015",
@@ -229,7 +243,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp016",
@@ -241,7 +256,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "upcoming",
-        description: "Pirotecnia Valenciana"
+        description: "Pirotecnia Valenciana",
+        order: null
       },
       {
         id: "fp017",
@@ -253,7 +269,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "procesión",
         status: "upcoming",
-        description: "Recorrido: Pza. de la Constitución, C/ Estación, Av. Gregorio Gea, C/ Murillo, continuando por recorrido habitual hasta Pza. de la Constitución"
+        description: "Recorrido: Pza. de la Constitución, C/ Estación, Av. Gregorio Gea, C/ Murillo, continuando por recorrido habitual hasta Pza. de la Constitución",
+        order: null
       },
       {
         id: "fp018",
@@ -265,7 +282,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "upcoming",
-        description: "Recorrido: Centro histórico de la población"
+        description: "Recorrido: Centro histórico de la población",
+        order: null
       },
       {
         id: "fp019",
@@ -277,7 +295,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp020",
@@ -289,7 +308,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fp021",
@@ -301,7 +321,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "tradicional",
         status: "upcoming",
-        description: "Recorrido: Mismo recorrido que la procesión"
+        description: "Recorrido: Mismo recorrido que la procesión",
+        order: null
       },
       {
         id: "fp022",
@@ -313,7 +334,8 @@ export class MemStorage implements IStorage {
         category: "patronales",
         type: "procesión",
         status: "upcoming",
-        description: "Recorrido: El habitual"
+        description: "Recorrido: El habitual",
+        order: null
       },
       // Fiestas Populares
       {
@@ -326,7 +348,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "tradicional",
         status: "upcoming",
-        description: "Visita a las casetas participantes"
+        description: "Visita a las casetas participantes",
+        order: null
       },
       {
         id: "fpop002",
@@ -338,7 +361,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "espectáculo",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop003",
@@ -350,7 +374,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "música",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop004",
@@ -362,7 +387,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "espectáculo",
         status: "upcoming",
-        description: "Con espectáculo itinerante Diminuts de la Cía LA FAM. Salida desde Pza. Príncipe de Asturias y llegada a Recinto Ferial"
+        description: "Con espectáculo itinerante Diminuts de la Cía LA FAM. Salida desde Pza. Príncipe de Asturias y llegada a Recinto Ferial",
+        order: null
       },
       {
         id: "fpop005",
@@ -374,7 +400,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "infantil",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop006",
@@ -386,7 +413,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "concierto",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop007",
@@ -398,7 +426,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "música",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop008",
@@ -410,7 +439,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "infantil",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop009",
@@ -422,7 +452,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "concierto",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop010",
@@ -434,7 +465,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "gastronómico",
         status: "upcoming",
-        description: "En colaboración con la Penya Els Tronats"
+        description: "En colaboración con la Penya Els Tronats",
+        order: null
       },
       {
         id: "fpop011",
@@ -446,7 +478,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "concierto",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop012",
@@ -458,7 +491,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "música",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop013",
@@ -470,7 +504,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "infantil",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop014",
@@ -482,7 +517,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "concierto",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop015",
@@ -494,7 +530,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "tradicional",
         status: "upcoming",
-        description: "Salida desde Pza. Príncipe de Asturias y llegada a Pza. de la Libertad"
+        description: "Salida desde Pza. Príncipe de Asturias y llegada a Pza. de la Libertad",
+        order: null
       },
       {
         id: "fpop016",
@@ -506,7 +543,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "concierto",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop017",
@@ -518,7 +556,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "música",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop018",
@@ -530,7 +569,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "infantil",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop019",
@@ -542,7 +582,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "música",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       },
       {
         id: "fpop020",
@@ -554,7 +595,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "tradicional",
         status: "upcoming",
-        description: "Pirotecnia del Mediterráneo"
+        description: "Pirotecnia del Mediterráneo",
+        order: null
       },
       {
         id: "fpop021",
@@ -566,7 +608,8 @@ export class MemStorage implements IStorage {
         category: "populares",
         type: "concierto",
         status: "upcoming",
-        description: null
+        description: null,
+        order: null
       }
     ];
 
@@ -612,7 +655,12 @@ export class MemStorage implements IStorage {
 
   async createEvent(insertEvent: InsertFestivalEvent): Promise<FestivalEvent> {
     const id = insertEvent.id || randomUUID();
-    const event: FestivalEvent = { ...insertEvent, id, description: insertEvent.description || null };
+    const event: FestivalEvent = { 
+      ...insertEvent, 
+      id, 
+      description: insertEvent.description || null,
+      order: insertEvent.order || null
+    };
     this.events.set(id, event);
     return event;
   }
