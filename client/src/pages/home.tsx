@@ -5,10 +5,10 @@ import FavoritesModal from "@/components/favorites-modal";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { ArrowUp, Heart } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
-import { formatEventDate, formatTabDate } from "@/lib/date-utils";
+import { formatEventDate } from "@/lib/date-utils";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,23 +18,44 @@ export default function Home() {
   const { data: allEvents = [], isLoading } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
-  // Group events by date and filter by search
-  const eventsByDate = useMemo(() => {
-    let filtered = allEvents;
-    
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = allEvents.filter((event: FestivalEvent) => 
-        event.name.toLowerCase().includes(query) ||
-        event.location.toLowerCase().includes(query) ||
-        event.organizer.toLowerCase().includes(query) ||
-        event.type.toLowerCase().includes(query)
-      );
-    }
+  // Get today's date
+  const today = new Date().toISOString().split('T')[0];
 
-    // Group by date
-    const grouped = filtered.reduce((acc, event) => {
+  // Filter events by search query
+  const filteredEvents = useMemo(() => {
+    if (!searchQuery) return allEvents;
+    
+    const query = searchQuery.toLowerCase();
+    return allEvents.filter((event: FestivalEvent) => 
+      event.name.toLowerCase().includes(query) ||
+      event.location.toLowerCase().includes(query) ||
+      event.organizer.toLowerCase().includes(query) ||
+      event.type.toLowerCase().includes(query)
+    );
+  }, [allEvents, searchQuery]);
+
+  // Get today's events
+  const todayEvents = useMemo(() => {
+    return filteredEvents
+      .filter(event => event.date === today)
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [filteredEvents, today]);
+
+  // Get future events (tomorrow and onwards)
+  const futureEvents = useMemo(() => {
+    return filteredEvents
+      .filter(event => event.date > today)
+      .sort((a, b) => {
+        if (a.date === b.date) {
+          return a.time.localeCompare(b.time);
+        }
+        return a.date.localeCompare(b.date);
+      });
+  }, [filteredEvents, today]);
+
+  // Group future events by date
+  const futureEventsByDate = useMemo(() => {
+    const grouped = futureEvents.reduce((acc, event) => {
       if (!acc[event.date]) {
         acc[event.date] = [];
       }
@@ -42,47 +63,13 @@ export default function Home() {
       return acc;
     }, {} as Record<string, FestivalEvent[]>);
 
-    // Sort events within each date by time
-    Object.keys(grouped).forEach(date => {
-      grouped[date].sort((a, b) => a.time.localeCompare(b.time));
-    });
-
     return grouped;
-  }, [allEvents, searchQuery]);
+  }, [futureEvents]);
 
-  // Get unique sorted dates
-  const sortedDates = useMemo(() => {
-    return Object.keys(eventsByDate).sort();
-  }, [eventsByDate]);
-
-  // Find default tab (today's date or first date with ongoing events)
-  const defaultTab = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Check if today has events
-    if (eventsByDate[today]) {
-      return today;
-    }
-    
-    // Find first date with ongoing events
-    const ongoingDate = sortedDates.find(date => 
-      eventsByDate[date].some(event => event.status === 'ongoing')
-    );
-    
-    if (ongoingDate) {
-      return ongoingDate;
-    }
-    
-    // Return first available date
-    return sortedDates[0] || today;
-  }, [eventsByDate, sortedDates]);
-
-  const [selectedDate, setSelectedDate] = useState(defaultTab);
-  
-  // Update selected date when defaultTab changes
-  React.useEffect(() => {
-    setSelectedDate(defaultTab);
-  }, [defaultTab]);
+  // Get sorted future dates
+  const futureDates = useMemo(() => {
+    return Object.keys(futureEventsByDate).sort();
+  }, [futureEventsByDate]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -107,50 +94,74 @@ export default function Home() {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Date Tabs */}
-        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full">
-          <div className="overflow-x-auto">
-            <TabsList className="inline-flex bg-white rounded-lg p-1 shadow-sm mb-6 min-w-full">
-              {sortedDates.map((date) => (
-                <TabsTrigger 
-                  key={date} 
-                  value={date} 
-                  className="text-sm font-medium whitespace-nowrap px-4 py-2 mx-1 data-[state=active]:bg-festival-orange data-[state=active]:text-white"
-                >
-                  {formatTabDate(date)}
-                </TabsTrigger>
+        {/* Today's Events Section */}
+        {todayEvents.length > 0 && (
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-festival-orange to-festival-red rounded-xl p-6 mb-6 text-white">
+              <h2 className="text-2xl font-display font-bold mb-2">No te pierdas hoy</h2>
+              <p className="text-lg opacity-90">{formatEventDate(today)}</p>
+            </div>
+            
+            <div className="space-y-4">
+              {todayEvents.map((event) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  isFavorite={isFavorite(event.id)}
+                  onToggleFavorite={() => toggleFavorite(event.id)}
+                />
               ))}
-            </TabsList>
+            </div>
           </div>
-          
-          {sortedDates.map((date) => (
-            <TabsContent key={date} value={date} className="mt-6">
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  {formatEventDate(date)}
-                </h2>
-                <div className="text-sm text-gray-600">
-                  {eventsByDate[date]?.length || 0} eventos
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                {eventsByDate[date]?.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    isFavorite={isFavorite(event.id)}
-                    onToggleFavorite={() => toggleFavorite(event.id)}
-                  />
-                )) || (
-                  <div className="text-center py-12">
-                    <div className="text-gray-500 text-lg">No hay eventos este día</div>
+        )}
+
+        {/* Future Events Section */}
+        {futureDates.length > 0 && (
+          <div>
+            <div className="bg-white rounded-xl p-6 mb-6 shadow-sm border">
+              <h2 className="text-2xl font-display font-bold text-gray-800 mb-2">Mañana y siguientes días</h2>
+              <p className="text-gray-600">Próximos eventos del festival</p>
+            </div>
+
+            <div className="space-y-8">
+              {futureDates.map((date) => (
+                <div key={date} className="border-b border-gray-200 pb-6 last:border-b-0">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-gray-800 mb-1">
+                      {formatEventDate(date)}
+                    </h3>
+                    <div className="text-sm text-gray-600">
+                      {futureEventsByDate[date]?.length || 0} eventos
+                    </div>
                   </div>
-                )}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+                  
+                  <div className="space-y-4">
+                    {futureEventsByDate[date]?.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        isFavorite={isFavorite(event.id)}
+                        onToggleFavorite={() => toggleFavorite(event.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* No events message */}
+        {todayEvents.length === 0 && futureDates.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-500 text-lg">
+              {searchQuery ? "No se encontraron eventos" : "No hay eventos programados"}
+            </div>
+            <div className="text-gray-400 text-sm mt-2">
+              {searchQuery && "Prueba a ajustar la búsqueda"}
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Floating Action Buttons */}
