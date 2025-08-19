@@ -89,25 +89,21 @@ export default function Header({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar eventos..."
-              className="w-full pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
               autoFocus
             />
             <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-            <div className="absolute right-2 top-1 flex space-x-1">
-              {searchQuery && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                  className="h-8 w-8 p-0 hover:bg-gray-100"
-                >
-                  <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                </Button>
-              )}
+            <div className="absolute right-2 top-1">
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowMobileSearch(false)}
+                onClick={() => {
+                  if (searchQuery) {
+                    setSearchQuery("");
+                  } else {
+                    setShowMobileSearch(false);
+                  }
+                }}
                 className="h-8 w-8 p-0 hover:bg-gray-100"
               >
                 <X className="w-4 h-4 text-gray-500 hover:text-gray-700" />
