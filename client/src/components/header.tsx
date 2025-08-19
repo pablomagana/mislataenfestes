@@ -9,6 +9,7 @@ interface HeaderProps {
   showMobileSearch: boolean;
   setShowMobileSearch: (show: boolean) => void;
   setShowFavoritesModal: (show: boolean) => void;
+  setShowCalendarModal: (show: boolean) => void;
 }
 
 export default function Header({
@@ -16,7 +17,8 @@ export default function Header({
   setSearchQuery,
   showMobileSearch,
   setShowMobileSearch,
-  setShowFavoritesModal
+  setShowFavoritesModal,
+  setShowCalendarModal
 }: HeaderProps) {
   return (
     <>
@@ -71,6 +73,7 @@ export default function Header({
               </Button>
               <Button
                 variant="ghost"
+                onClick={() => setShowCalendarModal(true)}
                 className="text-gray-600 hover:text-festival-purple transition-colors"
               >
                 <Calendar className="w-5 h-5" />

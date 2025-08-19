@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import Header from "@/components/header";
 import EventCard from "@/components/event-card";
 import FavoritesModal from "@/components/favorites-modal";
+import CalendarModal from "@/components/calendar-modal";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,11 @@ import { formatEventDate } from "@/lib/date-utils";
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  
+  // Refs for scrolling to specific dates
+  const dateRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const { data: allEvents = [], isLoading } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
@@ -85,6 +90,17 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const scrollToDate = (date: string) => {
+    const element = dateRefs.current[date];
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start',
+        inline: 'nearest'
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -101,12 +117,16 @@ export default function Home() {
         showMobileSearch={showMobileSearch}
         setShowMobileSearch={setShowMobileSearch}
         setShowFavoritesModal={setShowFavoritesModal}
+        setShowCalendarModal={setShowCalendarModal}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Today's Events Section */}
         {todayEvents.length > 0 && (
-          <div className="mb-8">
+          <div 
+            ref={(el) => dateRefs.current[today] = el}
+            className="mb-8"
+          >
             <div className="bg-gradient-to-r from-festival-orange to-festival-red rounded-xl p-6 mb-6 text-white">
               <h2 className="text-2xl font-display font-bold mb-2">No te pierdas hoy</h2>
               <p className="text-lg opacity-90">{formatEventDate(today)}</p>
@@ -135,7 +155,11 @@ export default function Home() {
 
             <div className="space-y-8">
               {futureDates.map((date) => (
-                <div key={date} className="border-b border-gray-200 pb-6 last:border-b-0">
+                <div 
+                  key={date} 
+                  ref={(el) => dateRefs.current[date] = el}
+                  className="border-b border-gray-200 pb-6 last:border-b-0"
+                >
                   <div className="mb-4">
                     <h3 className="text-xl font-bold text-gray-800 mb-1">
                       {formatEventDate(date)}
@@ -190,6 +214,14 @@ export default function Home() {
         onClose={() => setShowFavoritesModal(false)}
         favoriteEvents={allEvents.filter(event => isFavorite(event.id))}
         onRemoveFavorite={toggleFavorite}
+      />
+
+      <CalendarModal
+        isOpen={showCalendarModal}
+        onClose={() => setShowCalendarModal(false)}
+        events={allEvents}
+        favoriteEventIds={Array.from(favorites)}
+        onDayClick={scrollToDate}
       />
 
       {/* Footer */}
