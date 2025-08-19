@@ -198,6 +198,21 @@ export default function Home() {
         favoriteEvents={allEvents.filter(event => isFavorite(event.id))}
         onRemoveFavorite={toggleFavorite}
       />
+
+      {/* Footer */}
+      <footer className="mt-16 pb-8 text-center">
+        <p className="text-gray-500 text-sm">
+          The por{' '}
+          <a 
+            href="https://pablomagana.es" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-gray-700 transition-colors underline"
+          >
+            pablomagana.es
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
