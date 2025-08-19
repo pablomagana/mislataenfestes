@@ -10,6 +10,15 @@ export function formatEventDate(dateString: string): string {
   }
 }
 
+export function formatTabDate(dateString: string): string {
+  try {
+    const date = parse(dateString, "yyyy-MM-dd", new Date());
+    return format(date, "EEE d/MM", { locale: es });
+  } catch (error) {
+    return dateString;
+  }
+}
+
 export function formatEventTime(timeString: string): string {
   // timeString is in format "HH:MM"
   return timeString;

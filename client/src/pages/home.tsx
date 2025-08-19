@@ -1,82 +1,88 @@
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Header from "@/components/header";
-import HeroSection from "@/components/hero-section";
-import FilterSidebar from "@/components/filter-sidebar";
 import EventCard from "@/components/event-card";
 import FavoritesModal from "@/components/favorites-modal";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
 import { Button } from "@/components/ui/button";
-import { Calendar, List, ArrowUp, Heart } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowUp, Heart } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
-
-export type FilterState = {
-  patronales: boolean;
-  populares: boolean;
-  upcoming: boolean;
-  ongoing: boolean;
-  finished: boolean;
-};
+import { formatEventDate, formatTabDate } from "@/lib/date-utils";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<"all" | "patronales" | "populares">("all");
-  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [dateRange, setDateRange] = useState({ start: "", end: "" });
-  const [filters, setFilters] = useState<FilterState>({
-    patronales: true,
-    populares: true,
-    upcoming: true,
-    ongoing: false,
-    finished: false
-  });
 
   const { data: allEvents = [], isLoading } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
-  // Filter events based on current filters
-  const filteredEvents = allEvents.filter((event: FestivalEvent) => {
-    // Category filter
-    if (selectedCategory !== "all" && event.category !== selectedCategory) {
-      return false;
-    }
-
-    // Festival type filter
-    if (!filters[event.category as keyof FilterState]) {
-      return false;
-    }
-
-    // Status filter
-    if (!filters[event.status as keyof FilterState]) {
-      return false;
-    }
-
-    // Search filter
+  // Group events by date and filter by search
+  const eventsByDate = useMemo(() => {
+    let filtered = allEvents;
+    
+    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      if (!event.name.toLowerCase().includes(query) &&
-          !event.location.toLowerCase().includes(query) &&
-          !event.organizer.toLowerCase().includes(query) &&
-          !event.type.toLowerCase().includes(query)) {
-        return false;
+      filtered = allEvents.filter((event: FestivalEvent) => 
+        event.name.toLowerCase().includes(query) ||
+        event.location.toLowerCase().includes(query) ||
+        event.organizer.toLowerCase().includes(query) ||
+        event.type.toLowerCase().includes(query)
+      );
+    }
+
+    // Group by date
+    const grouped = filtered.reduce((acc, event) => {
+      if (!acc[event.date]) {
+        acc[event.date] = [];
       }
-    }
+      acc[event.date].push(event);
+      return acc;
+    }, {} as Record<string, FestivalEvent[]>);
 
-    // Date range filter
-    if (dateRange.start && event.date < dateRange.start) {
-      return false;
-    }
-    if (dateRange.end && event.date > dateRange.end) {
-      return false;
-    }
+    // Sort events within each date by time
+    Object.keys(grouped).forEach(date => {
+      grouped[date].sort((a, b) => a.time.localeCompare(b.time));
+    });
 
-    return true;
-  });
+    return grouped;
+  }, [allEvents, searchQuery]);
 
-  // Get current event (mock for demo - would be based on real time)
-  const currentEvent = allEvents.find(event => event.status === "ongoing");
+  // Get unique sorted dates
+  const sortedDates = useMemo(() => {
+    return Object.keys(eventsByDate).sort();
+  }, [eventsByDate]);
+
+  // Find default tab (today's date or first date with ongoing events)
+  const defaultTab = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check if today has events
+    if (eventsByDate[today]) {
+      return today;
+    }
+    
+    // Find first date with ongoing events
+    const ongoingDate = sortedDates.find(date => 
+      eventsByDate[date].some(event => event.status === 'ongoing')
+    );
+    
+    if (ongoingDate) {
+      return ongoingDate;
+    }
+    
+    // Return first available date
+    return sortedDates[0] || today;
+  }, [eventsByDate, sortedDates]);
+
+  const [selectedDate, setSelectedDate] = useState(defaultTab);
+  
+  // Update selected date when defaultTab changes
+  React.useEffect(() => {
+    setSelectedDate(defaultTab);
+  }, [defaultTab]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -101,106 +107,50 @@ export default function Home() {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <HeroSection currentEvent={currentEvent} />
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          <FilterSidebar 
-            filters={filters}
-            setFilters={setFilters}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-            eventCounts={{
-              patronales: allEvents.filter(e => e.category === "patronales").length,
-              populares: allEvents.filter(e => e.category === "populares").length
-            }}
-          />
-
-          <div className="flex-1">
-            {/* View Toggle */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex bg-white rounded-lg p-1 shadow-sm">
-                <Button
-                  onClick={() => setViewMode("list")}
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  className={`px-4 py-2 ${viewMode === "list" ? "bg-festival-orange text-white" : "text-gray-600 hover:text-gray-800"} transition-colors`}
+        {/* Date Tabs */}
+        <Tabs value={selectedDate} onValueChange={setSelectedDate} className="w-full">
+          <div className="overflow-x-auto">
+            <TabsList className="inline-flex bg-white rounded-lg p-1 shadow-sm mb-6 min-w-full">
+              {sortedDates.map((date) => (
+                <TabsTrigger 
+                  key={date} 
+                  value={date} 
+                  className="text-sm font-medium whitespace-nowrap px-4 py-2 mx-1 data-[state=active]:bg-festival-orange data-[state=active]:text-white"
                 >
-                  <List className="w-4 h-4 mr-2" />
-                  Lista
-                </Button>
-                <Button
-                  onClick={() => setViewMode("calendar")}
-                  variant={viewMode === "calendar" ? "default" : "ghost"}
-                  className={`px-4 py-2 ${viewMode === "calendar" ? "bg-festival-orange text-white" : "text-gray-600 hover:text-gray-800"} transition-colors`}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Calendario
-                </Button>
+                  {formatTabDate(date)}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+          
+          {sortedDates.map((date) => (
+            <TabsContent key={date} value={date} className="mt-6">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  {formatEventDate(date)}
+                </h2>
+                <div className="text-sm text-gray-600">
+                  {eventsByDate[date]?.length || 0} eventos
+                </div>
               </div>
               
-              <div className="text-sm text-gray-600">
-                <span>{filteredEvents.length}</span> eventos encontrados
-              </div>
-            </div>
-
-            {/* Category Tabs */}
-            <div className="flex space-x-1 mb-6 bg-white rounded-lg p-1 shadow-sm">
-              <Button
-                onClick={() => setSelectedCategory("all")}
-                variant="ghost"
-                className={`flex-1 py-3 px-4 text-center font-medium ${
-                  selectedCategory === "all" 
-                    ? "bg-festival-orange text-white" 
-                    : "text-gray-600 hover:text-gray-800"
-                } transition-colors`}
-              >
-                Todos los eventos
-              </Button>
-              <Button
-                onClick={() => setSelectedCategory("patronales")}
-                variant="ghost"
-                className={`flex-1 py-3 px-4 text-center font-medium ${
-                  selectedCategory === "patronales" 
-                    ? "bg-festival-orange text-white" 
-                    : "text-gray-600 hover:text-gray-800"
-                } transition-colors`}
-              >
-                Fiestas Patronales
-              </Button>
-              <Button
-                onClick={() => setSelectedCategory("populares")}
-                variant="ghost"
-                className={`flex-1 py-3 px-4 text-center font-medium ${
-                  selectedCategory === "populares" 
-                    ? "bg-festival-orange text-white" 
-                    : "text-gray-600 hover:text-gray-800"
-                } transition-colors`}
-              >
-                Fiestas Populares
-              </Button>
-            </div>
-
-            {/* Events List */}
-            <div className="space-y-4">
-              {filteredEvents.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-gray-500 text-lg">No se encontraron eventos</div>
-                  <div className="text-gray-400 text-sm mt-2">
-                    Prueba a ajustar los filtros o la búsqueda
-                  </div>
-                </div>
-              ) : (
-                filteredEvents.map((event) => (
+              <div className="space-y-4">
+                {eventsByDate[date]?.map((event) => (
                   <EventCard
                     key={event.id}
                     event={event}
                     isFavorite={isFavorite(event.id)}
                     onToggleFavorite={() => toggleFavorite(event.id)}
                   />
-                ))
-              )}
-            </div>
-          </div>
-        </div>
+                )) || (
+                  <div className="text-center py-12">
+                    <div className="text-gray-500 text-lg">No hay eventos este día</div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </main>
 
       {/* Floating Action Buttons */}

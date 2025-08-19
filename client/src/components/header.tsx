@@ -25,7 +25,7 @@ export default function Header({
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <i className="fas fa-star text-festival-orange text-2xl"></i>
-                <h1 className="text-xl font-display font-bold text-gray-800">Fiestas Mislata</h1>
+                <h1 className="text-xl font-display font-bold text-gray-800">Eventos</h1>
               </div>
             </div>
             
