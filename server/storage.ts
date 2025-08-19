@@ -388,7 +388,7 @@ export class MemStorage implements IStorage {
         type: "espectáculo",
         status: "upcoming",
         description: "Con espectáculo itinerante Diminuts de la Cía LA FAM. Salida desde Pza. Príncipe de Asturias y llegada a Recinto Ferial",
-        order: null
+        order: "1"
       },
       {
         id: "fpop005",
@@ -401,7 +401,7 @@ export class MemStorage implements IStorage {
         type: "infantil",
         status: "upcoming",
         description: null,
-        order: null
+        order: "2"
       },
       {
         id: "fpop006",
@@ -414,7 +414,7 @@ export class MemStorage implements IStorage {
         type: "concierto",
         status: "upcoming",
         description: null,
-        order: null
+        order: "3"
       },
       {
         id: "fpop007",
@@ -427,7 +427,7 @@ export class MemStorage implements IStorage {
         type: "música",
         status: "upcoming",
         description: null,
-        order: null
+        order: "4"
       },
       {
         id: "fpop008",
