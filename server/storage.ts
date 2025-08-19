@@ -505,7 +505,7 @@ export class MemStorage implements IStorage {
         type: "infantil",
         status: "upcoming",
         description: null,
-        order: null
+        order: "1"
       },
       {
         id: "fpop014",
@@ -518,7 +518,7 @@ export class MemStorage implements IStorage {
         type: "concierto",
         status: "upcoming",
         description: null,
-        order: null
+        order: "2"
       },
       {
         id: "fpop015",
@@ -531,7 +531,7 @@ export class MemStorage implements IStorage {
         type: "tradicional",
         status: "upcoming",
         description: "Salida desde Pza. Príncipe de Asturias y llegada a Pza. de la Libertad",
-        order: null
+        order: "3"
       },
       {
         id: "fpop016",
@@ -544,7 +544,7 @@ export class MemStorage implements IStorage {
         type: "concierto",
         status: "upcoming",
         description: null,
-        order: null
+        order: "4"
       },
       {
         id: "fpop017",
@@ -557,7 +557,7 @@ export class MemStorage implements IStorage {
         type: "música",
         status: "upcoming",
         description: null,
-        order: null
+        order: "5"
       },
       {
         id: "fpop018",
@@ -570,7 +570,7 @@ export class MemStorage implements IStorage {
         type: "infantil",
         status: "upcoming",
         description: null,
-        order: null
+        order: "1"
       },
       {
         id: "fpop019",
@@ -583,7 +583,7 @@ export class MemStorage implements IStorage {
         type: "música",
         status: "upcoming",
         description: null,
-        order: null
+        order: "2"
       },
       {
         id: "fpop020",
@@ -596,7 +596,7 @@ export class MemStorage implements IStorage {
         type: "tradicional",
         status: "upcoming",
         description: "Pirotecnia del Mediterráneo",
-        order: null
+        order: "3"
       },
       {
         id: "fpop021",
@@ -609,7 +609,7 @@ export class MemStorage implements IStorage {
         type: "concierto",
         status: "upcoming",
         description: null,
-        order: null
+        order: "4"
       }
     ];
 
