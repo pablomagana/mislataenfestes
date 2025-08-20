@@ -27,10 +27,11 @@ function App() {
 
   useEffect(() => {
     // Sin ID, avisa y no hagas nada
-    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
-      console.warn("[GA4] Missing VITE_GA_MEASUREMENT_ID");
-      return;
-    }
+
+    // if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
+    //   console.warn("Missing VITE_GA_MEASUREMENT_ID");
+    //   return;
+    // }
 
     // Manejo async de la inicialización
     const initializeAnalytics = async () => {

@@ -10,7 +10,7 @@ declare global {
 }
 
 // ---- Config ----
-const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID; // ej: G-438BRCNW8N
+const GA_ID = "G-438BRCNW8N"; // ej: G-438BRCNW8N
 const CONSENT_KEY = 'cookie-consent';
 
 // ---- Debug helpers ----
