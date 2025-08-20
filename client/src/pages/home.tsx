@@ -6,10 +6,12 @@ import CalendarModal from "@/components/calendar-modal";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
 import { Button } from "@/components/ui/button";
+import { OutboundLink } from "@/components/analytics";
 
-import { ArrowUp, Heart } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate } from "@/lib/date-utils";
+import { trackScrollToTop, trackScrollToDate } from "@/lib/festival-analytics";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,6 +90,7 @@ export default function Home() {
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    trackScrollToTop();
   };
 
   const scrollToDate = (date: string) => {
@@ -98,6 +101,10 @@ export default function Home() {
         block: 'start',
         inline: 'nearest'
       });
+      
+      // Track navegación a fecha específica
+      const eventsCount = futureEventsByDate[date]?.length || 0;
+      trackScrollToDate(date, eventsCount);
     }
   };
 
@@ -118,6 +125,9 @@ export default function Home() {
         setShowMobileSearch={setShowMobileSearch}
         setShowFavoritesModal={setShowFavoritesModal}
         setShowCalendarModal={setShowCalendarModal}
+        filteredEventsCount={filteredEvents.length}
+        favoritesCount={favorites.size}
+        today={today}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -139,6 +149,7 @@ export default function Home() {
                   event={event}
                   isFavorite={isFavorite(event.id)}
                   onToggleFavorite={() => toggleFavorite(event.id)}
+                  currentFavoritesCount={favorites.size}
                 />
               ))}
             </div>
@@ -176,6 +187,7 @@ export default function Home() {
                         event={event}
                         isFavorite={isFavorite(event.id)}
                         onToggleFavorite={() => toggleFavorite(event.id)}
+                        currentFavoritesCount={favorites.size}
                       />
                     ))}
                   </div>
@@ -228,14 +240,13 @@ export default function Home() {
       <footer className="mt-16 pb-8 text-center">
         <p className="text-gray-500 text-sm">
           Desarrollada por {' '}
-          <a 
+          <OutboundLink 
             href="https://pablomagana.es" 
-            target="_blank" 
-            rel="noopener noreferrer"
+            linkId="footer_developer"
             className="text-gray-500 hover:text-gray-700 transition-colors underline"
           >
             pablomagana.es
-          </a>
+          </OutboundLink>
         </p>
       </footer>
     </div>

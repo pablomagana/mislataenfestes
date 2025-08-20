@@ -5,6 +5,7 @@ import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import type { FestivalEvent } from "@shared/schema";
+import { trackCalendarDateClick } from "@/lib/festival-analytics";
 
 interface CalendarModalProps {
   isOpen: boolean;
@@ -69,6 +70,13 @@ export default function CalendarModal({
     const dayEvents = eventsByDate[dateStr] || [];
     
     if (dayEvents.length > 0) {
+      // Track clicks en fechas del calendario
+      trackCalendarDateClick(
+        dateStr, 
+        dayEvents.length, 
+        hasFavoriteEvents(dateStr)
+      );
+      
       onDayClick(dateStr);
       onClose();
     }

@@ -1,6 +1,12 @@
 import { Link } from "wouter";
+import { useEffect } from "react";
+import { trackError404 } from "@/lib/analytics";
 
 export default function NotFound() {
+  useEffect(() => {
+    // Trackea el error 404 cuando se monta el componente
+    trackError404(window.location.pathname + window.location.search);
+  }, []);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-festival-orange/10 to-festival-red/10">
       <div className="text-center space-y-6 p-8">

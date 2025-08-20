@@ -28,20 +28,30 @@ function App() {
   useEffect(() => {
     // Sin ID, avisa y no hagas nada
     if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
-      console.warn("Missing VITE_GA_MEASUREMENT_ID");
+      console.warn("[GA4] Missing VITE_GA_MEASUREMENT_ID");
       return;
     }
 
-    // Actualiza el Consent Mode y (si procede) inicializa GA
-    if (consent?.analytics === true) {
-      setAnalyticsConsent(true);  // actualiza Consent Mode
-      initGA();                   // inyecta gtag si no existe
-      // Envía el primer page_view de la ruta actual (importante en SPA)
-      trackPageView(window.location.pathname + window.location.search);
-    } else if (consent && consent.analytics === false) {
-      setAnalyticsConsent(false);
-      // (opcional) aquí NO destruimos GA; solo denegamos analytics_storage
-    }
+    // Manejo async de la inicialización
+    const initializeAnalytics = async () => {
+      // Actualiza el Consent Mode y (si procede) inicializa GA
+      if (consent?.analytics === true) {
+        setAnalyticsConsent(true);  // actualiza Consent Mode
+        
+        try {
+          await initGA();                   // inyecta gtag si no existe (ahora async)
+          // Envía el primer page_view de la ruta actual (importante en SPA)
+          trackPageView(window.location.pathname + window.location.search);
+        } catch (error) {
+          console.error("[GA4] Failed to initialize analytics:", error);
+        }
+      } else if (consent && consent.analytics === false) {
+        setAnalyticsConsent(false);
+        // (opcional) aquí NO destruimos GA; solo denegamos analytics_storage
+      }
+    };
+
+    initializeAnalytics();
   }, [consent]);
 
   return (

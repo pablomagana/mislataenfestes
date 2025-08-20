@@ -4,14 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
+import { trackFavoriteToggle } from "@/lib/festival-analytics";
 
 interface EventCardProps {
   event: FestivalEvent;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  currentFavoritesCount: number;
 }
 
-export default function EventCard({ event, isFavorite, onToggleFavorite }: EventCardProps) {
+export default function EventCard({ event, isFavorite, onToggleFavorite, currentFavoritesCount }: EventCardProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'ongoing':
@@ -129,7 +131,16 @@ export default function EventCard({ event, isFavorite, onToggleFavorite }: Event
           <Button
             variant="ghost"
             size="icon"
-            onClick={onToggleFavorite}
+            onClick={() => {
+              onToggleFavorite();
+              
+              // Track favoritos
+              trackFavoriteToggle(
+                event,
+                isFavorite ? 'remove' : 'add',
+                currentFavoritesCount
+              );
+            }}
             className="ml-4 text-gray-400 hover:text-festival-red transition-colors"
           >
             <Heart className={`w-5 h-5 ${isFavorite ? 'fill-festival-red text-festival-red' : ''}`} />

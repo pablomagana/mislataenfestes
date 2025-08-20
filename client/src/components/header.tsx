@@ -2,6 +2,7 @@ import { Search, Heart, Calendar, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import mislataEscudo from "@/assets/mislata-escudo.svg";
+import { trackSearch, trackSearchClear, trackFavoritesModalOpen, trackCalendarOpen } from "@/lib/festival-analytics";
 
 interface HeaderProps {
   searchQuery: string;
@@ -10,6 +11,9 @@ interface HeaderProps {
   setShowMobileSearch: (show: boolean) => void;
   setShowFavoritesModal: (show: boolean) => void;
   setShowCalendarModal: (show: boolean) => void;
+  filteredEventsCount: number;
+  favoritesCount: number;
+  today: string;
 }
 
 export default function Header({
@@ -18,7 +22,10 @@ export default function Header({
   showMobileSearch,
   setShowMobileSearch,
   setShowFavoritesModal,
-  setShowCalendarModal
+  setShowCalendarModal,
+  filteredEventsCount,
+  favoritesCount,
+  today
 }: HeaderProps) {
   return (
     <>
@@ -44,7 +51,17 @@ export default function Header({
                 <Input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    const newQuery = e.target.value;
+                    setSearchQuery(newQuery);
+                    
+                    // Track búsquedas después de 500ms
+                    if (newQuery.trim()) {
+                      setTimeout(() => {
+                        trackSearch(newQuery, filteredEventsCount, 'header');
+                      }, 500);
+                    }
+                  }}
                   placeholder="Buscar eventos..."
                   className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
                 />
@@ -53,7 +70,10 @@ export default function Header({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => {
+                      setSearchQuery("");
+                      trackSearchClear('header');
+                    }}
                     className="absolute right-1 top-1 h-8 w-8 p-0 hover:bg-gray-100"
                   >
                     <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
@@ -66,14 +86,20 @@ export default function Header({
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
-                onClick={() => setShowFavoritesModal(true)}
+                onClick={() => {
+                  setShowFavoritesModal(true);
+                  trackFavoritesModalOpen(favoritesCount);
+                }}
                 className="text-gray-600 hover:text-festival-red transition-colors"
               >
                 <Heart className="w-5 h-5" />
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => setShowCalendarModal(true)}
+                onClick={() => {
+                  setShowCalendarModal(true);
+                  trackCalendarOpen(favoritesCount, today);
+                }}
                 className="text-gray-600 hover:text-festival-purple transition-colors"
               >
                 <Calendar className="w-5 h-5" />
@@ -97,7 +123,17 @@ export default function Header({
             <Input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const newQuery = e.target.value;
+                setSearchQuery(newQuery);
+                
+                // Track búsquedas después de 500ms
+                if (newQuery.trim()) {
+                  setTimeout(() => {
+                    trackSearch(newQuery, filteredEventsCount, 'mobile');
+                  }, 500);
+                }
+              }}
               placeholder="Buscar eventos..."
               className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
               autoFocus
@@ -110,6 +146,7 @@ export default function Header({
                 onClick={() => {
                   if (searchQuery) {
                     setSearchQuery("");
+                    trackSearchClear('mobile');
                   } else {
                     setShowMobileSearch(false);
                   }
