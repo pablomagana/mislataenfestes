@@ -102,8 +102,8 @@ value = "dist/public"
 
 ### Paso 4: Desplegar
 ```bash
-# Compilar primero
-npm run build
+# Compilar la aplicación estática
+npx vite build
 
 # Desplegar a Cloudflare Pages
 wrangler pages deploy dist/public --project-name festival-mislata
@@ -134,8 +134,8 @@ dist/
 ```
 
 ### Variables de Entorno Requeridas
-- `VITE_GA_MEASUREMENT_ID`: ID de Google Analytics
-- `NODE_ENV`: production (automático en Cloudflare)
+Solo necesitas configurar en Cloudflare Pages:
+- `VITE_GA_MEASUREMENT_ID`: Tu ID de Google Analytics (formato: G-XXXXXXXXXX)
 
 ### Archivo `_redirects` (Opcional)
 Para manejar las rutas de tu SPA, crea `dist/public/_redirects`:
