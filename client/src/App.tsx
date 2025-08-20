@@ -1,3 +1,4 @@
+// src/App.tsx
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,15 +7,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import { useEffect } from "react";
-import { initGA } from "./lib/analytics";
+import { initGA, setAnalyticsConsent, trackPageView } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
 import CookieBanner from "@/components/cookie-banner";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 
 function Router() {
-  // Track page views when routes change
-  useAnalytics();
-  
+ useAnalytics({ countHashChanges: false });
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -26,15 +25,22 @@ function Router() {
 function App() {
   const { consent } = useCookieConsent();
 
-  // Initialize Google Analytics when app loads and user has consented
   useEffect(() => {
-    // Only initialize GA if user has consented to analytics cookies
-    if (consent?.analytics) {
-      if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
-        console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
-      } else {
-        initGA();
-      }
+    // Sin ID, avisa y no hagas nada
+    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      console.warn("Missing VITE_GA_MEASUREMENT_ID");
+      return;
+    }
+
+    // Actualiza el Consent Mode y (si procede) inicializa GA
+    if (consent?.analytics === true) {
+      setAnalyticsConsent(true);  // actualiza Consent Mode
+      initGA();                   // inyecta gtag si no existe
+      // Envía el primer page_view de la ruta actual (importante en SPA)
+      trackPageView(window.location.pathname + window.location.search);
+    } else if (consent && consent.analytics === false) {
+      setAnalyticsConsent(false);
+      // (opcional) aquí NO destruimos GA; solo denegamos analytics_storage
     }
   }, [consent]);
 

@@ -1,75 +1,134 @@
-// Define the gtag function globally
+// src/analytics.ts
+
+// ---- Tipos globales ----
 declare global {
   interface Window {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
+    __gaInitialized?: boolean;
   }
 }
 
-// Initialize Google Analytics
-export const initGA = () => {
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+// ---- Config ----
+const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID; // ej: G-438BRCNW8N
+const CONSENT_KEY = 'cookie-consent';
 
-  if (!measurementId) {
-    console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
-    return;
-  }
-
-  // Add Google Analytics script to the head
-  const script1 = document.createElement('script');
-  script1.async = true;
-  script1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(script1);
-
-  // Initialize gtag
-  const script2 = document.createElement('script');
-  script2.textContent = `
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '${measurementId}');
-  `;
-  document.head.appendChild(script2);
-};
-
-// Check if analytics consent is given
-const hasAnalyticsConsent = () => {
+// ---- Helpers internos ----
+const hasAnalyticsConsent = (): boolean => {
   try {
-    const consent = localStorage.getItem('cookie-consent');
-    if (consent) {
-      const parsed = JSON.parse(consent);
-      return parsed.analytics === true;
-    }
+    const raw = localStorage.getItem(CONSENT_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return parsed?.analytics === true;
   } catch {
     return false;
   }
-  return false;
 };
 
-// Track page views - useful for single-page applications
+const ensureDataLayer = () => {
+  window.dataLayer = window.dataLayer || [];
+  if (!window.gtag) {
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
+    };
+  }
+};
+
+const loadGAScript = (measurementId: string) => {
+  // Evita insertar el mismo script varias veces
+  if (document.querySelector(`script[src*="gtag/js?id=${measurementId}"]`)) return;
+
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+  document.head.appendChild(script);
+};
+
+// ---- API pública ----
+
+/**
+ * Inicializa GA4 de forma idempotente.
+ * - Define dataLayer/gtag
+ * - Aplica Consent Mode por defecto (denied) hasta que el usuario consienta
+ * - Carga gtag.js
+ * - Configura GA con send_page_view: false para SPA
+ */
+export const initGA = () => {
+  if (typeof window === 'undefined') return;
+  if (!GA_ID) {
+    console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
+    return;
+  }
+  if (window.__gaInitialized) return;
+
+  ensureDataLayer();
+
+  // Consent Mode por defecto: denied (hasta que haya consentimiento)
+  window.gtag('consent', 'default', {
+    ad_storage: 'denied',
+    analytics_storage: hasAnalyticsConsent() ? 'granted' : 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    functionality_storage: 'granted', // opcional según tu política
+    security_storage: 'granted',      // opcional según tu política
+  });
+
+  // Marca de inicio
+  window.gtag('js', new Date());
+
+  // Carga el script
+  loadGAScript(GA_ID);
+
+  // Config principal (SPA: sin pageview automático)
+  window.gtag('config', GA_ID, {
+    send_page_view: false,
+  });
+
+  window.__gaInitialized = true;
+};
+
+/**
+ * Actualiza el consentimiento y lo persiste en localStorage.
+ * Úsalo cuando el usuario acepte/deniegue en tu banner de cookies.
+ */
+export const setAnalyticsConsent = (granted: boolean) => {
+  try {
+    const current = JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}');
+    const next = { ...current, analytics: granted };
+    localStorage.setItem(CONSENT_KEY, JSON.stringify(next));
+  } catch {
+    // no-op
+  }
+
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('consent', 'update', {
+      analytics_storage: granted ? 'granted' : 'denied',
+    });
+  }
+};
+
+/**
+ * Dispara page_view manual en cada navegación (SPA).
+ * Ej: on route change → trackPageView(location.pathname + location.search)
+ */
 export const trackPageView = (url: string) => {
-  if (typeof window === 'undefined' || !window.gtag || !hasAnalyticsConsent()) return;
-  
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-  if (!measurementId) return;
-  
-  window.gtag('config', measurementId, {
-    page_path: url
+  if (typeof window === 'undefined' || !window.gtag || !GA_ID) return;
+  if (!hasAnalyticsConsent()) return;
+
+  // Puedes usar 'config' o 'event'. GA4 recomienda evento explícito:
+  window.gtag('event', 'page_view', {
+    page_path: url,
+    page_location: typeof window !== 'undefined' ? window.location.href : url,
+    page_title: typeof document !== 'undefined' ? document.title : undefined,
+    send_to: GA_ID,
   });
 };
 
-// Track events
-export const trackEvent = (
-  action: string, 
-  category?: string, 
-  label?: string, 
-  value?: number
-) => {
-  if (typeof window === 'undefined' || !window.gtag || !hasAnalyticsConsent()) return;
-  
-  window.gtag('event', action, {
-    event_category: category,
-    event_label: label,
-    value: value,
-  });
-};
+/**
+ * Dispara eventos GA4.
+ * Usa nombres y params GA4 (p.ej. 'login', 'search', 'select_promotion', etc.)
+ * @param action Nombre del evento (GA4)
+ * @param params Parámetros GA4 (ej: { value: 9.99, currency: 'EUR' })
+ */
+export const trackEvent = (action: string, params: Record<string, any> = {}) => {
+  if (typeof wi
