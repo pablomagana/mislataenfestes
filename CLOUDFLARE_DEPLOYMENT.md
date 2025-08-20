@@ -111,14 +111,24 @@ wrangler pages deploy dist/public --project-name festival-mislata
 
 ## Configuración Específica para esta Aplicación
 
+### ✅ Solución al Problema "No se cargan eventos"
+Tu aplicación ahora incluye una **solución híbrida** que funciona tanto en desarrollo como en producción:
+
+1. **En desarrollo (Replit)**: Usa la API backend (`/api/events`)
+2. **En producción (Cloudflare Pages)**: Usa datos estáticos (`/api/events.json`)
+
+El sistema automáticamente detecta el entorno y usa la fuente de datos apropiada.
+
 ### Estructura de Archivos después del Build
 ```
 dist/
 ├── public/          # Frontend estático (para Cloudflare Pages)
 │   ├── index.html
 │   ├── assets/
+│   ├── api/
+│   │   └── events.json  # ✅ Datos estáticos de eventos del festival
 │   └── ...
-└── index.js         # Backend (para Cloudflare Workers, si es necesario)
+└── index.js         # Backend (para desarrollo local)
 ```
 
 ### Variables de Entorno Requeridas
