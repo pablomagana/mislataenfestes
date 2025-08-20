@@ -131,4 +131,8 @@ export const trackPageView = (url: string) => {
  * @param params Parámetros GA4 (ej: { value: 9.99, currency: 'EUR' })
  */
 export const trackEvent = (action: string, params: Record<string, any> = {}) => {
-  if (typeof wi
+  if (typeof window === 'undefined' || !window.gtag) return;
+  if (!hasAnalyticsConsent()) return;
+
+  window.gtag('event', action, params);
+};
