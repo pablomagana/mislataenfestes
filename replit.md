@@ -16,11 +16,11 @@ Preferred communication style: Simple, everyday language.
 - **Form Handling**: React Hook Form with Zod validation through @hookform/resolvers
 - **Styling**: Tailwind CSS with custom CSS variables for theming and design tokens
 
-## Backend Architecture
-- **Runtime**: Node.js with Express.js server framework
-- **API Pattern**: RESTful API endpoints under `/api` prefix
-- **Data Storage**: In-memory storage implementation with interface-based design for future database integration
-- **Development**: Hot module replacement and development middleware through Vite integration
+## Backend Architecture (ELIMINATED - Now Static Only)
+- **Previous Setup**: Node.js with Express.js server framework (removed)
+- **Current Setup**: Pure static application with JSON data files
+- **Data Storage**: Static JSON files in `client/public/api/` directory
+- **Development**: Vite development server for hot module replacement
 
 ## Database Design
 - **ORM**: Drizzle ORM configured for PostgreSQL with Neon Database serverless driver
@@ -72,6 +72,13 @@ The core entity is `FestivalEvent` with properties:
 - **User Experience**: Non-intrusive bottom banner with customizable settings modal
 
 ## Recent Changes
+
+### August 20, 2025 - Static Application Conversion
+- **Backend Elimination**: Completely removed Express.js backend server
+- **Static Data**: Converted to pure static JSON data files (`/api/events.json`)
+- **Smart Status Calculation**: Event status (upcoming/ongoing/finished) calculated dynamically in frontend
+- **Cloudflare Ready**: Application now fully compatible with Cloudflare Pages static hosting
+- **Simplified Deployment**: Single `vite build` command creates deployable static files
 
 ### August 19, 2025
 - **Google Analytics**: Integrated GA4 with consent-based initialization
