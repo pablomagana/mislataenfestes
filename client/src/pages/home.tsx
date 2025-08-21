@@ -211,7 +211,7 @@ export default function Home() {
       </main>
 
       {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6">
+      <div className="fixed bottom-16 right-6">
         <Button
           onClick={scrollToTop}
           className="bg-white text-gray-600 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
@@ -237,7 +237,7 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-1 text-center shadow-md z-10">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 text-center shadow-md z-10">
         <p className="text-gray-500 text-sm">
           Desarrollada por {' '}
           <OutboundLink 
