@@ -237,7 +237,7 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 text-center shadow-md z-10">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center shadow-md z-10">
         <p className="text-gray-500 text-sm">
           Desarrollada por {' '}
           <OutboundLink 
