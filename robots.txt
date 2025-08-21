@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /.well-known/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /tmp/
+
+# Crawl delay (optional - uncomment if needed)
+# Crawl-delay: 1
+
+Sitemap: https://mislataenfestes.com/sitemap.xml
