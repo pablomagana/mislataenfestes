@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import type { FilterState } from "@/pages/home";
+import type { FilterState } from "@/types/filters";
 
 interface FilterSidebarProps {
   filters: FilterState;

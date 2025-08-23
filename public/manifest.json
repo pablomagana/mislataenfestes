@@ -1,0 +1,20 @@
+{
+  "name": "Mislata en Festes - Fiestas Patronales",
+  "short_name": "Mislata Festes",
+  "description": "Programa completo de las Fiestas Patronales de Mislata",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["events", "local", "entertainment"],
+  "lang": "es",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

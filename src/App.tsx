@@ -13,7 +13,7 @@ import CookieBanner from "@/components/cookie-banner";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 
 function Router() {
- useAnalytics({ countHashChanges: false });
+  useAnalytics({ countHashChanges: false });
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -26,13 +26,6 @@ function App() {
   const { consent } = useCookieConsent();
 
   useEffect(() => {
-    // Sin ID, avisa y no hagas nada
-
-    // if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
-    //   console.warn("Missing VITE_GA_MEASUREMENT_ID");
-    //   return;
-    // }
-
     // Manejo async de la inicialización
     const initializeAnalytics = async () => {
       // Actualiza el Consent Mode y (si procede) inicializa GA

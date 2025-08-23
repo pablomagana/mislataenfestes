@@ -138,10 +138,6 @@ export const initGA = async (): Promise<void> => {
  * Actualiza el consentimiento y lo persiste en localStorage.
  * Úsalo cuando el usuario acepte/deniegue en tu banner de cookies.
  */
-/**
- * Actualiza el consentimiento y lo persiste en localStorage.
- * Úsalo cuando el usuario acepte/deniegue en tu banner de cookies.
- */
 export const setAnalyticsConsent = (granted: boolean) => {
   try {
     const current = JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}');
