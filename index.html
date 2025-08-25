@@ -17,9 +17,42 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="modulepreload" href="/src/main.tsx">
+    
+    <!-- Content Security Policy to block Replit injections -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com; script-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com; object-src 'none'; base-uri 'self';">
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Disable Replit dev banner injection
+      if (window.location.hostname.includes('replit') || window.location.hostname.includes('repl.co')) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1) {
+                // Remove Replit dev banner scripts
+                if (node.src && node.src.includes('replit-dev-banner')) {
+                  node.remove();
+                }
+                // Remove any Replit injected elements
+                if (node.id && node.id.includes('replit')) {
+                  node.remove();
+                }
+                // Remove scripts from replit.com domain
+                if (node.tagName === 'SCRIPT' && node.src && node.src.includes('replit.com')) {
+                  node.remove();
+                }
+              }
+            });
+          });
+        });
+        observer.observe(document, { childList: true, subtree: true });
+        
+        // Prevent Replit environment detection
+        window.__REPLIT_ENV = undefined;
+        window.REPLIT_ENV = undefined;
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
