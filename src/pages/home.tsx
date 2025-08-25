@@ -24,7 +24,7 @@ export default function Home() {
   // Refs for scrolling to specific dates
   const dateRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const { data: allEvents = [], isLoading } = useFestivalEvents();
+  const { data: allEvents = [], isLoading, error } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   // Get today's date
@@ -114,6 +114,18 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl">Cargando eventos...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500 text-center">
+          <h2 className="text-2xl font-bold mb-4">Error cargando eventos</h2>
+          <p>{error.message}</p>
+          <p className="text-sm mt-2">Revise la consola del navegador para más detalles</p>
+        </div>
       </div>
     );
   }

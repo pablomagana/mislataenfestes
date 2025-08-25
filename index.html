@@ -18,35 +18,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="modulepreload" href="/src/main.tsx">
     
+    
   </head>
   <body>
     <div id="root"></div>
     <script>
-      // Disable Replit dev banner injection
-      if (window.location.hostname.includes('replit') || window.location.hostname.includes('repl.co')) {
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-              if (node.nodeType === 1) {
-                // Remove Replit dev banner scripts
-                if (node.src && node.src.includes('replit-dev-banner')) {
-                  node.remove();
-                }
-                // Remove any Replit injected elements
-                if (node.id && node.id.includes('replit')) {
-                  node.remove();
-                }
-                // Remove scripts from replit.com domain
-                if (node.tagName === 'SCRIPT' && node.src && node.src.includes('replit.com')) {
-                  node.remove();
-                }
+      // Block only Replit dev banner specifically
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
+              // Remove only Replit dev banner specifically
+              if (node.src && node.src.includes('replit-dev-banner.js')) {
+                console.log('Blocked Replit dev banner:', node.src);
+                node.remove();
               }
-            });
+              // Block other Replit injections but preserve Cloudflare
+              if (node.src && node.src.includes('replit.com') && !node.src.includes('cloudflare')) {
+                console.log('Blocked Replit script:', node.src);
+                node.remove();
+              }
+            }
           });
         });
-        observer.observe(document, { childList: true, subtree: true });
-        
-        // Prevent Replit environment detection
+      });
+      observer.observe(document, { childList: true, subtree: true });
+      
+      // Prevent Replit environment detection only on Replit domains
+      if (window.location.hostname.includes('replit') || window.location.hostname.includes('repl.co')) {
         window.__REPLIT_ENV = undefined;
         window.REPLIT_ENV = undefined;
       }
