@@ -4,21 +4,25 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/home";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { initGA, setAnalyticsConsent, trackPageView } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
 import CookieBanner from "@/components/cookie-banner";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 
+// Lazy load pages for code splitting
+const Home = lazy(() => import("@/pages/home"));
+const NotFound = lazy(() => import("@/pages/not-found"));
+
 function Router() {
   useAnalytics({ countHashChanges: false });
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Cargando...</div>}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 

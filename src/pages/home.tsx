@@ -1,12 +1,14 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, lazy, Suspense } from "react";
 import Header from "@/components/header";
 import EventCard from "@/components/event-card";
-import FavoritesModal from "@/components/favorites-modal";
-import CalendarModal from "@/components/calendar-modal";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
 import { Button } from "@/components/ui/button";
 import { OutboundLink } from "@/components/analytics";
+
+// Lazy load heavy modals
+const FavoritesModal = lazy(() => import("@/components/favorites-modal"));
+const CalendarModal = lazy(() => import("@/components/calendar-modal"));
 
 import { ArrowUp } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
@@ -221,20 +223,28 @@ export default function Home() {
         </Button>
       </div>
 
-      <FavoritesModal
-        isOpen={showFavoritesModal}
-        onClose={() => setShowFavoritesModal(false)}
-        favoriteEvents={allEvents.filter(event => isFavorite(event.id))}
-        onRemoveFavorite={toggleFavorite}
-      />
+      {showFavoritesModal && (
+        <Suspense fallback={<div>Cargando...</div>}>
+          <FavoritesModal
+            isOpen={showFavoritesModal}
+            onClose={() => setShowFavoritesModal(false)}
+            favoriteEvents={allEvents.filter(event => isFavorite(event.id))}
+            onRemoveFavorite={toggleFavorite}
+          />
+        </Suspense>
+      )}
 
-      <CalendarModal
-        isOpen={showCalendarModal}
-        onClose={() => setShowCalendarModal(false)}
-        events={allEvents}
-        favoriteEventIds={Array.from(favorites)}
-        onDayClick={scrollToDate}
-      />
+      {showCalendarModal && (
+        <Suspense fallback={<div>Cargando...</div>}>
+          <CalendarModal
+            isOpen={showCalendarModal}
+            onClose={() => setShowCalendarModal(false)}
+            events={allEvents}
+            favoriteEventIds={Array.from(favorites)}
+            onDayClick={scrollToDate}
+          />
+        </Suspense>
+      )}
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center shadow-md z-10">
