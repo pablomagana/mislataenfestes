@@ -10,8 +10,11 @@ export default function HeroSection({ currentEvent }: HeroSectionProps) {
     <div className="bg-gradient-to-r from-festival-orange to-festival-red rounded-xl p-6 mb-8 text-white">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div className="mb-4 lg:mb-0">
-          <h2 className="text-3xl font-display font-bold mb-2">Fiestas de Mislata 2024</h2>
-          <p className="text-xl opacity-90">Del 23 de agosto al 6 de septiembre</p>
+          <h2 className="text-3xl font-display font-bold mb-2">Fiestas Patronales de Mislata 2025</h2>
+          <p className="text-xl opacity-90 mb-2">Del 23 de agosto al 6 de septiembre</p>
+          <p className="text-lg opacity-80">
+            Disfruta de las mejores fiestas de Mislata con <strong>música</strong>, <strong>eventos</strong> culturales y espectáculos en las <strong>fiestas</strong> más esperadas de <strong>Mislata</strong>
+          </p>
         </div>
         <div className="bg-white bg-opacity-20 rounded-lg p-4 text-center">
           <div className="text-sm opacity-80">Ahora:</div>

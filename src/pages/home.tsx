@@ -259,17 +259,24 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center shadow-md z-10">
-        <p className="text-gray-500 text-sm">
-          Desarrollada por {' '}
-          <OutboundLink 
-            href="https://pablomagana.es" 
-            linkId="footer_developer"
-            className="text-gray-500 hover:text-gray-700 transition-colors underline"
-          >
-            pablomagana.es
-          </OutboundLink>
-        </p>
+      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 shadow-md z-10">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center">
+            <p className="text-gray-500 text-xs mb-1">
+              <strong>Fiestas de Mislata 2025</strong> - Programa de fiestas - eventos, música y celebraciones
+            </p>
+            <p className="text-gray-500 text-xs">
+              Desarrollada por {' '}
+              <OutboundLink 
+                href="https://pablomagana.es" 
+                linkId="footer_developer"
+                className="text-gray-500 hover:text-gray-700 transition-colors underline"
+              >
+                pablomagana.es
+              </OutboundLink>
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

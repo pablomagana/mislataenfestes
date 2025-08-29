@@ -1,8 +1,9 @@
-import { Search, Heart, Calendar, X } from "lucide-react";
+import { Search, Heart, Calendar, X, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import mislataEscudo from "@/assets/mislata-escudo.svg";
 import { trackSearch, trackSearchClear, trackFavoritesModalOpen, trackCalendarOpen } from "@/lib/festival-analytics";
+import { Link } from "wouter";
 
 interface HeaderProps {
   searchQuery: string;
@@ -33,7 +34,7 @@ export default function Header({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
+              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                 <img 
                   src={mislataEscudo} 
                   alt="Escudo de Mislata" 
@@ -42,7 +43,7 @@ export default function Header({
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-festival-red to-festival-orange bg-clip-text text-transparent leading-tight">
                   Festes Mislata
                 </h1>
-              </div>
+              </Link>
             </div>
             
             {/* Desktop Search Bar */}
@@ -84,6 +85,15 @@ export default function Header({
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-4">
+              <Link href="/about">
+                <Button
+                  variant="ghost"
+                  className="hidden sm:flex text-gray-600 hover:text-festival-orange transition-colors"
+                >
+                  <Info className="w-5 h-5 mr-2" />
+                  <span className="hidden md:inline">Información</span>
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 onClick={() => {
