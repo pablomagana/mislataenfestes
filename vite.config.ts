@@ -8,80 +8,43 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+    dedupe: ['react', 'react-dom'], // Evitar múltiples versiones de React
+  },
+  define: {
+    // Evitar problemas con process.env en producción
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
   build: {
     outDir: "dist/public",
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Core libraries
-          if (id.includes('react') && !id.includes('react-')) {
-            return 'react';
-          }
-          if (id.includes('react-dom')) {
-            return 'react';
-          }
-          
+        format: 'es',
+        manualChunks: {
+          // React core - mantener juntos para evitar problemas de dependencias
+          'react-vendor': ['react', 'react-dom'],
           // Router
-          if (id.includes('wouter')) {
-            return 'router';
-          }
-          
-          // Only commonly used Radix UI components
-          if (id.includes('@radix-ui/react-dialog') || 
-              id.includes('@radix-ui/react-toast') ||
-              id.includes('@radix-ui/react-tooltip') ||
-              id.includes('@radix-ui/react-slot')) {
-            return 'ui-core';
-          }
-          
-          // Less frequently used Radix components
-          if (id.includes('@radix-ui/')) {
-            return 'ui-extended';
-          }
-          
-          // Icons (heavy)
-          if (id.includes('lucide-react') || id.includes('react-icons')) {
-            return 'icons';
-          }
-          
-          // Forms (only if used)
-          if (id.includes('react-hook-form') || id.includes('@hookform/resolvers') || id.includes('zod')) {
-            return 'forms';
-          }
-          
-          // Heavy libraries
-          if (id.includes('framer-motion')) {
-            return 'motion';
-          }
-          if (id.includes('recharts')) {
-            return 'charts';
-          }
-          if (id.includes('@tanstack/react-query')) {
-            return 'query';
-          }
-          
-          // Vendor chunk for other node_modules
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+          'router': ['wouter'],
+          // Query client
+          'query': ['@tanstack/react-query'],
+          // UI Components (Radix UI)
+          'ui-components': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-label',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-popover'
+          ],
+          // Icons
+          'icons': ['lucide-react']
         },
       },
     },
     target: 'es2020', // More modern target for better optimization
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info'],
-        dead_code: true,
-      },
-      mangle: {
-        safari10: true,
-      },
-    },
+    minify: 'esbuild', // Usar esbuild que es más rápido y está integrado
     sourcemap: false, // Disable sourcemaps in production for smaller builds
     reportCompressedSize: false, // Faster builds
   },

@@ -475,7 +475,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center">
             <p className="text-gray-500 text-xs mb-1">
-              <strong>Fiestas de Mislata 2025</strong> - Programa de fiestas - eventos, música y celebraciones
+              <strong>Fiestas de Mislata 2025</strong>
             </p>
             <p className="text-gray-500 text-xs">
               Desarrollada por {' '}
