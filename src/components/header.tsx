@@ -129,43 +129,66 @@ export default function Header({
       {/* Mobile Search Bar */}
       {showMobileSearch && (
         <div className="md:hidden bg-white border-b border-gray-200 px-4 py-3 sticky top-16 z-40 shadow-sm">
-          <div className="relative">
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                const newQuery = e.target.value;
-                setSearchQuery(newQuery);
-                
-                // Track búsquedas después de 500ms
-                if (newQuery.trim()) {
-                  setTimeout(() => {
-                    trackSearch(newQuery, filteredEventsCount, 'mobile');
-                  }, 500);
-                }
-              }}
-              placeholder="Buscar eventos..."
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
-              autoFocus
-            />
-            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-            <div className="absolute right-2 top-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  if (searchQuery) {
-                    setSearchQuery("");
-                    trackSearchClear('mobile');
-                  } else {
-                    setShowMobileSearch(false);
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  const newQuery = e.target.value;
+                  setSearchQuery(newQuery);
+                  
+                  // Track búsquedas después de 500ms
+                  if (newQuery.trim()) {
+                    setTimeout(() => {
+                      trackSearch(newQuery, filteredEventsCount, 'mobile');
+                    }, 500);
                   }
                 }}
-                className="h-8 w-8 p-0 hover:bg-gray-100"
-              >
-                <X className="w-4 h-4 text-gray-500 hover:text-gray-700" />
-              </Button>
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    // Cerrar filtros para mostrar resultados
+                    setShowMobileSearch(false);
+                    trackSearch(searchQuery, filteredEventsCount, 'mobile');
+                  }
+                }}
+                placeholder="Buscar eventos..."
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-festival-orange focus:border-transparent"
+                autoFocus
+              />
+              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <div className="absolute right-2 top-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (searchQuery) {
+                      setSearchQuery("");
+                      trackSearchClear('mobile');
+                    } else {
+                      setShowMobileSearch(false);
+                    }
+                  }}
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                >
+                  <X className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+                </Button>
+              </div>
             </div>
+            
+            {/* Botón de búsqueda */}
+            <Button
+              onClick={() => {
+                if (searchQuery.trim()) {
+                  setShowMobileSearch(false);
+                  trackSearch(searchQuery, filteredEventsCount, 'mobile');
+                }
+              }}
+              disabled={!searchQuery.trim()}
+              className="bg-festival-orange hover:bg-festival-red text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Buscar
+            </Button>
           </div>
         </div>
       )}

@@ -12,7 +12,9 @@ interface FilterSidebarProps {
   eventCounts: {
     patronales: number;
     populares: number;
+    musical: number;
   };
+  onFilterChange?: () => void; // Callback para cerrar filtros en móvil
 }
 
 export default function FilterSidebar({
@@ -20,10 +22,19 @@ export default function FilterSidebar({
   setFilters,
   dateRange,
   setDateRange,
-  eventCounts
+  eventCounts,
+  onFilterChange
 }: FilterSidebarProps) {
   const handleFilterChange = (key: keyof FilterState, value: boolean) => {
     setFilters({ ...filters, [key]: value });
+    
+    // En móvil, cerrar filtros después de seleccionar uno
+    if (onFilterChange && value === true) {
+      // Pequeño delay para que se vea la selección antes de cerrar
+      setTimeout(() => {
+        onFilterChange();
+      }, 300);
+    }
   };
 
   return (
@@ -58,6 +69,27 @@ export default function FilterSidebar({
             </div>
             <Badge className="bg-festival-green text-white">
               {eventCounts.populares}
+            </Badge>
+          </div>
+        </div>
+      </div>
+
+      {/* Event Type Filter */}
+      <div className="bg-white rounded-lg p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Tipo de Evento</h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="musical"
+                checked={filters.musical}
+                onCheckedChange={(checked) => handleFilterChange('musical', !!checked)}
+                className="text-purple-500 focus:ring-purple-500"
+              />
+              <Label htmlFor="musical" className="text-gray-700">Eventos Musicales</Label>
+            </div>
+            <Badge className="bg-purple-500 text-white">
+              {eventCounts.musical}
             </Badge>
           </div>
         </div>
@@ -104,13 +136,29 @@ export default function FilterSidebar({
           <Input
             type="date"
             value={dateRange.start}
-            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+            onChange={(e) => {
+              setDateRange({ ...dateRange, start: e.target.value });
+              // Cerrar filtros en móvil después de seleccionar fecha
+              if (onFilterChange && e.target.value) {
+                setTimeout(() => {
+                  onFilterChange();
+                }, 300);
+              }
+            }}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-festival-orange focus:border-transparent"
           />
           <Input
             type="date"
             value={dateRange.end}
-            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+            onChange={(e) => {
+              setDateRange({ ...dateRange, end: e.target.value });
+              // Cerrar filtros en móvil después de seleccionar fecha
+              if (onFilterChange && e.target.value) {
+                setTimeout(() => {
+                  onFilterChange();
+                }, 300);
+              }
+            }}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-festival-orange focus:border-transparent"
           />
         </div>
