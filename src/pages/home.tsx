@@ -16,12 +16,6 @@ import { ArrowUp } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate } from "@/lib/date-utils";
 import { trackScrollToTop, trackScrollToDate } from "@/lib/festival-analytics";
-import { 
-  getFestivalToday, 
-  getFestivalEventStatus, 
-  groupEventsByFestivalDate,
-  sortEventsByFestivalTime 
-} from "@/lib/festival-time";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,8 +41,8 @@ export default function Home() {
   const { data: allEvents = [], isLoading, error } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
-  // Get today's date using festival logic (considers early morning as previous day)
-  const today = getFestivalToday();
+  // Get today's date
+  const today = new Date().toISOString().split('T')[0];
 
   // Helper function to check if event is musical
   const isMusicalEvent = (event: FestivalEvent) => {
@@ -101,7 +95,7 @@ export default function Home() {
     };
   }, [allEvents]);
 
-  // Filter events by search query and filters, then apply festival status logic
+  // Filter events by search query and filters
   const filteredEvents = useMemo(() => {
     let events = allEvents;
 
@@ -116,39 +110,56 @@ export default function Home() {
       );
     }
 
-    // Apply filters
-    events = applyFilters(events);
-
-    // Apply festival status logic (early morning events as previous day)
-    return events.map(event => ({
-      ...event,
-      status: getFestivalEventStatus(event.date, event.time, event.status)
-    }));
+    // Then apply all other filters
+    return applyFilters(events);
   }, [allEvents, searchQuery, filters, dateRange]);
 
-  // Get today's events using festival grouping
+  // Get today's events
   const todayEvents = useMemo(() => {
-    const eventsByFestivalDate = groupEventsByFestivalDate(filteredEvents);
-    const todayFestivalEvents = eventsByFestivalDate[today] || [];
-    return sortEventsByFestivalTime(todayFestivalEvents);
+    return filteredEvents
+      .filter(event => event.date === today)
+      .sort((a, b) => {
+        // Use order field if available, otherwise fallback to time sorting
+        if (a.order && b.order) {
+          return a.order.localeCompare(b.order);
+        }
+        return a.time.localeCompare(b.time);
+      });
   }, [filteredEvents, today]);
 
-  // Get future events using festival date logic
-  const { futureEventsByDate, futureDates } = useMemo(() => {
-    const eventsByFestivalDate = groupEventsByFestivalDate(filteredEvents);
-    
-    // Filter future dates (after today in festival terms)
-    const futureEventsByDate: Record<string, FestivalEvent[]> = {};
-    Object.keys(eventsByFestivalDate).forEach(festivalDate => {
-      if (festivalDate > today) {
-        futureEventsByDate[festivalDate] = sortEventsByFestivalTime(eventsByFestivalDate[festivalDate]);
-      }
-    });
-    
-    const futureDates = Object.keys(futureEventsByDate).sort();
-    
-    return { futureEventsByDate, futureDates };
+  // Get future events (tomorrow and onwards)
+  const futureEvents = useMemo(() => {
+    return filteredEvents
+      .filter(event => event.date > today)
+      .sort((a, b) => {
+        if (a.date === b.date) {
+          // Use order field if available, otherwise fallback to time sorting
+          if (a.order && b.order) {
+            return a.order.localeCompare(b.order);
+          }
+          return a.time.localeCompare(b.time);
+        }
+        return a.date.localeCompare(b.date);
+      });
   }, [filteredEvents, today]);
+
+  // Group future events by date
+  const futureEventsByDate = useMemo(() => {
+    const grouped = futureEvents.reduce((acc, event) => {
+      if (!acc[event.date]) {
+        acc[event.date] = [];
+      }
+      acc[event.date].push(event);
+      return acc;
+    }, {} as Record<string, FestivalEvent[]>);
+
+    return grouped;
+  }, [futureEvents]);
+
+  // Get sorted future dates
+  const futureDates = useMemo(() => {
+    return Object.keys(futureEventsByDate).sort();
+  }, [futureEventsByDate]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
