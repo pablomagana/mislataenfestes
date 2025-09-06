@@ -38,13 +38,13 @@ function calculateEventsStatusWithNextEvent(events: FestivalEvent[]): FestivalEv
 
 export function useFestivalEvents() {
   return useQuery<FestivalEvent[]>({
-    queryKey: ['events', new Date().getHours(), new Date().getMinutes()], // Forzar recálculo cada minuto
+    queryKey: ['events'],
     queryFn: async () => {
       const events = await getStaticEvents();
       // Actualizar status considerando cuando termina cada evento (siguiente evento)
       return calculateEventsStatusWithNextEvent(events);
     },
-    staleTime: 1000 * 60 * 1, // 1 minuto para debug
+    staleTime: 1000 * 60 * 5, // 5 minutos
   });
 }
 

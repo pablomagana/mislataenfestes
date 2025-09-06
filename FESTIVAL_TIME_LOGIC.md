@@ -1,27 +1,26 @@
-# 🌙 Lógica de Tiempo Festivalero
+# 🌙 Sistema de Gestión de Día Festivalero
 
 ## Problema Resuelto
 
-Los eventos de madrugada (00:30, 01:00, etc.) aparecían como "terminados" cuando en realidad pertenecían a la "noche anterior" y seguían siendo válidos.
+Los eventos de madrugada (00:00, 00:30, etc.) necesitaban un sistema de gestión especial porque el "día festivalero" no coincide con el día calendario.
 
-**Ejemplo del problema:**
-- Evento: 31/08 00:30 (Noche del 30 al 31)
-- Hora actual: 1/09 02:00
-- Status incorrecto: "Terminado" ❌
-- Status correcto: "En curso" ✅
+**Ejemplo práctico:**
+- **Día Festivalero 6 Septiembre** = desde 8:00 AM del 6/09 hasta 5:00 AM del 7/09
+- Eventos 00:00 y 00:30 del **7/09 calendario** → pertenecen al **"Día Festivalero 6/09"**
 
 ## Solución: Sistema de Día Festivalero
 
 ### Concepto
 
-Un "día festivalero" no termina a las 00:00, sino a las **03:00 AM**. Los eventos entre 00:00-02:59 se consideran parte del día anterior.
+Un "día festivalero" va desde las **8:00 AM hasta las 5:00 AM del día siguiente**. Los eventos de madrugada (00:00-04:59) se consideran parte del día festivalero anterior.
 
-### Reglas
+### Reglas del Sistema
 
-1. **Eventos 00:00-02:59**: Pertenecen al día anterior
-2. **Eventos 03:00-23:59**: Pertenecen al día actual  
+1. **Eventos 00:00-04:59**: Pertenecen al día festivalero anterior
+2. **Eventos 05:00-23:59**: Pertenecen al día festivalero actual  
 3. **Duración**: 📅 **Hasta el siguiente evento** o 2 horas máximo si es el último
-4. **⚡ NUEVO: Solo un evento a la vez**: Si empieza un nuevo evento, el anterior automáticamente termina
+4. **⚡ Solo un evento a la vez**: Si empieza un nuevo evento, el anterior automáticamente termina
+5. **🗓️ Agrupación inteligente**: Los eventos se agrupan por día festivalero, no calendario
 
 ### Casos de Uso
 

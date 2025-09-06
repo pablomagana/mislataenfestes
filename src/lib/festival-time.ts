@@ -10,24 +10,32 @@
  * - Evento 31/08 21:00: Si son las 02:00 del 1/09 → 'Terminado'
  */
 
-import { parse, addDays, subDays } from 'date-fns';
+import { parse } from 'date-fns';
 
-// Hora límite para considerar eventos como del día anterior (03:00)
-const FESTIVAL_DAY_END_HOUR = 3;
+// Hora límite para considerar eventos como del día anterior (05:00)
+// El "día festivalero" va desde 8:00 AM hasta 5:00 AM del día siguiente
+const FESTIVAL_DAY_END_HOUR = 5;
 
 /**
  * Convierte una fecha y hora a "fecha festivalera"
- * Los eventos 00:00-02:59 se consideran del día anterior
+ * Los eventos 00:00-04:59 se consideran del día anterior
  */
 export function toFestivalDate(dateString: string, timeString: string): string {
   try {
     const [hours] = timeString.split(':').map(Number);
     
-    // Si el evento es entre 00:00 y 02:59, pertenece al día anterior
+    // Si el evento es entre 00:00 y 04:59, pertenece al día anterior
     if (hours >= 0 && hours < FESTIVAL_DAY_END_HOUR) {
-      const originalDate = parse(dateString, 'yyyy-MM-dd', new Date());
-      const festivalDate = subDays(originalDate, 1);
-      return festivalDate.toISOString().split('T')[0]; // Formato yyyy-MM-dd
+      // Manipulación directa de string para evitar problemas de zona horaria
+      const [year, month, day] = dateString.split('-').map(Number);
+      const date = new Date(year, month - 1, day); // mes es 0-indexado
+      date.setDate(date.getDate() - 1);
+      
+      const resultYear = date.getFullYear();
+      const resultMonth = (date.getMonth() + 1).toString().padStart(2, '0');
+      const resultDay = date.getDate().toString().padStart(2, '0');
+      
+      return `${resultYear}-${resultMonth}-${resultDay}`;
     }
     
     return dateString;
@@ -39,19 +47,30 @@ export function toFestivalDate(dateString: string, timeString: string): string {
 
 /**
  * Obtiene la "fecha festivalera" actual
- * Si son las 00:00-02:59, considera que estamos en el día anterior
+ * Si son las 00:00-04:59, considera que estamos en el día anterior
  */
 export function getCurrentFestivalDate(): string {
   const now = new Date();
   const currentHour = now.getHours();
   
-  // Si son las 00:00-02:59, consideramos que seguimos en el día anterior
+  // Si son las 00:00-04:59, consideramos que seguimos en el día anterior
   if (currentHour >= 0 && currentHour < FESTIVAL_DAY_END_HOUR) {
-    const yesterdayFestival = subDays(now, 1);
-    return yesterdayFestival.toISOString().split('T')[0];
+    // Manipulación directa para evitar problemas de zona horaria
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    const year = yesterday.getFullYear();
+    const month = (yesterday.getMonth() + 1).toString().padStart(2, '0');
+    const day = yesterday.getDate().toString().padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   }
   
-  return now.toISOString().split('T')[0];
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
 }
 
 /**
@@ -89,29 +108,6 @@ function calculateEventEndTime(eventDate: string, eventTime: string, allDayEvent
   return new Date(eventDateTime.getTime() + (2 * 60 * 60 * 1000));
 }
 
-/**
- * Función de debug para eventos de madrugada
- */
-function debugMidnightEvent(eventDate: string, eventTime: string) {
-  const now = new Date();
-  const eventDateTime = parse(`${eventDate} ${eventTime}`, 'yyyy-MM-dd HH:mm', new Date());
-  const [eventHour] = eventTime.split(':').map(Number);
-  const currentHour = now.getHours();
-  
-  console.log(`🌙 DEBUG EVENTO MADRUGADA:`, {
-    evento: `${eventDate} ${eventTime}`,
-    eventHour,
-    currentHour,
-    nowISOString: now.toISOString(),
-    eventDateTimeISOString: eventDateTime.toISOString(),
-    isMidnightEvent: eventHour >= 0 && eventHour < 3,
-    isCurrentMidnight: currentHour >= 0 && currentHour < 3,
-    comparison: {
-      now_vs_event: now.getTime() - eventDateTime.getTime(),
-      is_now_after_event: now >= eventDateTime
-    }
-  });
-}
 
 /**
  * Calcula el estado de un evento usando lógica festivalera - VERSION SIMPLIFICADA
@@ -127,30 +123,18 @@ export function calculateEventStatusFestival(
   try {
     const now = new Date();
     
-    // Crear fecha/hora completa del evento
+    // CORRECCIÓN ZONA HORARIA: Crear fecha/hora del evento en zona horaria española
     const eventDateTime = parse(`${eventDate} ${eventTime}`, 'yyyy-MM-dd HH:mm', new Date());
     
     // Calcular cuándo termina el evento (siguiente evento o 2 horas)
     const eventEndTime = calculateEventEndTime(eventDate, eventTime, allDayEvents);
     
-    const [eventHour] = eventTime.split(':').map(Number);
-    
-    // DEBUG para eventos de madrugada
-    if (eventHour >= 0 && eventHour < FESTIVAL_DAY_END_HOUR) {
-      debugMidnightEvent(eventDate, eventTime);
-    }
-    
-    // SIMPLIFICACIÓN EXTREMA: Solo usar comparación directa de timestamps
-    // La lógica festivalera se aplicará SOLO al agrupar eventos, no al calcular status
-    
+    // LÓGICA SIMPLIFICADA: Comparación directa de timestamps
     if (now >= eventDateTime && now < eventEndTime) {
-      console.log(`✅ EVENTO EN CURSO: ${eventDate} ${eventTime}`);
       return 'ongoing';
     } else if (now >= eventEndTime) {
-      console.log(`❌ EVENTO TERMINADO: ${eventDate} ${eventTime}`);
       return 'finished';
     } else {
-      console.log(`⏳ EVENTO PRÓXIMO: ${eventDate} ${eventTime}`);
       return 'upcoming';
     }
   } catch (error) {
@@ -203,7 +187,7 @@ export function groupEventsByFestivalDate<T extends { date: string; time: string
       const timeA = a.time.split(':').map(Number);
       const timeB = b.time.split(':').map(Number);
       
-      // Eventos de madrugada van al final
+      // Eventos de madrugada (00:00-04:59) van al final
       const isAMidnight = timeA[0] >= 0 && timeA[0] < FESTIVAL_DAY_END_HOUR;
       const isBMidnight = timeB[0] >= 0 && timeB[0] < FESTIVAL_DAY_END_HOUR;
       

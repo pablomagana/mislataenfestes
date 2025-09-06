@@ -18,6 +18,7 @@ import { ArrowUp, Camera, Clock, MapPin, Users, Search, X } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import { trackScrollToTop, trackScrollToDate } from "@/lib/festival-analytics";
+import { toFestivalDate, getCurrentFestivalDate } from "@/lib/festival-time";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
@@ -46,7 +47,9 @@ export default function Home() {
   const { data: allEvents = [], isLoading, error } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
-  // Get today's date
+  // Get today's festival date (considering midnight events belong to previous day)
+  const todayFestival = getCurrentFestivalDate();
+  // Also keep regular today for date comparisons
   const today = new Date().toISOString().split('T')[0];
 
   // Helper function to check if event is musical
@@ -119,10 +122,13 @@ export default function Home() {
     return applyFilters(events);
   }, [allEvents, searchQuery, filters, dateRange]);
 
-  // Get today's events
+  // Get today's events (using festival date logic)
   const todayEvents = useMemo(() => {
     return filteredEvents
-      .filter(event => event.date === today)
+      .filter(event => {
+        const eventFestivalDate = toFestivalDate(event.date, event.time);
+        return eventFestivalDate === todayFestival;
+      })
       .sort((a, b) => {
         // Use order field if available, otherwise fallback to time sorting
         if (a.order && b.order) {
@@ -130,31 +136,38 @@ export default function Home() {
         }
         return a.time.localeCompare(b.time);
       });
-  }, [filteredEvents, today]);
+  }, [filteredEvents, todayFestival]);
 
-  // Get future events (tomorrow and onwards)
+  // Get future events (tomorrow festival day and onwards)
   const futureEvents = useMemo(() => {
     return filteredEvents
-      .filter(event => event.date > today)
+      .filter(event => {
+        const eventFestivalDate = toFestivalDate(event.date, event.time);
+        return eventFestivalDate > todayFestival;
+      })
       .sort((a, b) => {
-        if (a.date === b.date) {
+        const aFestivalDate = toFestivalDate(a.date, a.time);
+        const bFestivalDate = toFestivalDate(b.date, b.time);
+        
+        if (aFestivalDate === bFestivalDate) {
           // Use order field if available, otherwise fallback to time sorting
           if (a.order && b.order) {
             return a.order.localeCompare(b.order);
           }
           return a.time.localeCompare(b.time);
         }
-        return a.date.localeCompare(b.date);
+        return aFestivalDate.localeCompare(bFestivalDate);
       });
-  }, [filteredEvents, today]);
+  }, [filteredEvents, todayFestival]);
 
-  // Group future events by date
+  // Group future events by festival date
   const futureEventsByDate = useMemo(() => {
     const grouped = futureEvents.reduce((acc, event) => {
-      if (!acc[event.date]) {
-        acc[event.date] = [];
+      const festivalDate = toFestivalDate(event.date, event.time);
+      if (!acc[festivalDate]) {
+        acc[festivalDate] = [];
       }
-      acc[event.date].push(event);
+      acc[festivalDate].push(event);
       return acc;
     }, {} as Record<string, FestivalEvent[]>);
 
@@ -450,7 +463,8 @@ export default function Home() {
                       <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
                       <span className="text-white/90 text-sm font-medium uppercase tracking-wide">
                         {(() => {
-                          if (currentEvent.date !== today) return "Próximo evento";
+                          const eventFestivalDate = toFestivalDate(currentEvent.date, currentEvent.time);
+                          if (eventFestivalDate !== todayFestival) return "Próximo evento";
                           
                           const now = new Date();
                           const currentTime = now.getHours() * 100 + now.getMinutes();
@@ -484,7 +498,7 @@ export default function Home() {
                       </div>
                     </div>
                     
-                    {currentEvent.date !== today && (
+                    {toFestivalDate(currentEvent.date, currentEvent.time) !== todayFestival && (
                       <div className="mt-2 text-white/80 text-sm">
                         {formatEventDate(currentEvent.date)}
                       </div>
@@ -530,7 +544,7 @@ export default function Home() {
         {/* Today's Events Section */}
         {todayEvents.length > 0 && (
           <div 
-            ref={(el) => dateRefs.current[today] = el}
+            ref={(el) => dateRefs.current[todayFestival] = el}
             className="mb-8 space-y-4"
           >
             {todayEvents.map((event) => (
@@ -548,9 +562,6 @@ export default function Home() {
         {/* Future Events Section */}
         {futureDates.length > 0 && (
           <div>
-            <div className="bg-white rounded-xl p-6 mb-6 shadow-sm border">
-              <p className="text-gray-600">Próximos eventos del festival</p>
-            </div>
 
             <div className="space-y-8">
               {futureDates.map((date) => (
