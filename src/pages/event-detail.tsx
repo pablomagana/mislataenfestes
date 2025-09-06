@@ -10,6 +10,10 @@ import { useEventPhotos, useEventPhotoStats } from "@/hooks/use-event-photos";
 import { useFavorites } from "@/hooks/use-favorites";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import { trackFavoriteToggle, trackEventDetailView, trackEventDetailShare, trackBackToEvents } from "@/lib/festival-analytics";
+<<<<<<< HEAD
+=======
+import { getFestivalEventStatus } from "@/lib/festival-time";
+>>>>>>> main
 import PhotoGallery from "@/components/photo-gallery";
 import LoadingSpinner from "@/components/loading-spinner";
 
@@ -31,12 +35,30 @@ export default function EventDetail({ eventId }: EventDetailProps) {
   const { totalPhotos, hasPhotos, recentPhotos } = useEventPhotoStats(eventId);
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
+<<<<<<< HEAD
   // Track page view when event loads
   React.useEffect(() => {
     if (event && !eventLoading) {
       trackEventDetailView(event.id, event.name);
     }
   }, [event, eventLoading]);
+=======
+  // Apply festival status logic (handles early morning events as previous day)
+  const eventWithFestivalStatus = React.useMemo(() => {
+    if (!event) return null;
+    return {
+      ...event,
+      status: getFestivalEventStatus(event.date, event.time, event.status)
+    };
+  }, [event]);
+
+  // Track page view when event loads
+  React.useEffect(() => {
+    if (eventWithFestivalStatus && !eventLoading) {
+      trackEventDetailView(eventWithFestivalStatus.id, eventWithFestivalStatus.name);
+    }
+  }, [eventWithFestivalStatus, eventLoading]);
+>>>>>>> main
 
   // Loading state
   if (eventLoading) {
@@ -49,7 +71,11 @@ export default function EventDetail({ eventId }: EventDetailProps) {
   }
 
   // Error state
+<<<<<<< HEAD
   if (eventError || !event) {
+=======
+  if (eventError || !eventWithFestivalStatus) {
+>>>>>>> main
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -70,15 +96,24 @@ export default function EventDetail({ eventId }: EventDetailProps) {
 
   const handleShare = async () => {
     const shareData = {
+<<<<<<< HEAD
       title: event.name,
       text: `¡Ven a ${event.name} en las Fiestas de Mislata!`,
+=======
+      title: eventWithFestivalStatus.name,
+      text: `¡Ven a ${eventWithFestivalStatus.name} en las Fiestas de Mislata!`,
+>>>>>>> main
       url: window.location.href,
     };
 
     if (navigator.share) {
       try {
         await navigator.share(shareData);
+<<<<<<< HEAD
         trackEventDetailShare(event.id, 'native');
+=======
+        trackEventDetailShare(eventWithFestivalStatus.id, 'native');
+>>>>>>> main
       } catch (error) {
         // User cancelled or error occurred
         console.log('Share cancelled or failed');
@@ -86,14 +121,22 @@ export default function EventDetail({ eventId }: EventDetailProps) {
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(window.location.href);
+<<<<<<< HEAD
       trackEventDetailShare(event.id, 'clipboard');
+=======
+      trackEventDetailShare(eventWithFestivalStatus.id, 'clipboard');
+>>>>>>> main
       // TODO: Show toast notification
     }
   };
 
   const handleBackToEvents = () => {
     const timeSpent = Date.now() - pageStartTime;
+<<<<<<< HEAD
     trackBackToEvents(event?.id || eventId, timeSpent);
+=======
+    trackBackToEvents(eventWithFestivalStatus.id, timeSpent);
+>>>>>>> main
     setLocation('/');
   };
 
@@ -177,16 +220,27 @@ export default function EventDetail({ eventId }: EventDetailProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
+<<<<<<< HEAD
                   toggleFavorite(event.id);
                   trackFavoriteToggle(
                     event,
                     isFavorite(event.id) ? 'remove' : 'add',
+=======
+                  toggleFavorite(eventWithFestivalStatus.id);
+                  trackFavoriteToggle(
+                    eventWithFestivalStatus,
+                    isFavorite(eventWithFestivalStatus.id) ? 'remove' : 'add',
+>>>>>>> main
                     favorites.size
                   );
                 }}
                 className="text-gray-400 hover:text-festival-red transition-colors"
               >
+<<<<<<< HEAD
                 <Heart className={`w-5 h-5 ${isFavorite(event.id) ? 'fill-festival-red text-festival-red' : ''}`} />
+=======
+                <Heart className={`w-5 h-5 ${isFavorite(eventWithFestivalStatus.id) ? 'fill-festival-red text-festival-red' : ''}`} />
+>>>>>>> main
               </Button>
               
               <Button
@@ -208,14 +262,24 @@ export default function EventDetail({ eventId }: EventDetailProps) {
           <CardContent className="p-6">
             {/* Badges */}
             <div className="flex items-center space-x-2 mb-4">
+<<<<<<< HEAD
               {getStatusBadge(event.status)}
               {getCategoryBadge(event.category)}
               {getTypeBadge(event.type)}
+=======
+              {getStatusBadge(eventWithFestivalStatus.status)}
+              {getCategoryBadge(eventWithFestivalStatus.category)}
+              {getTypeBadge(eventWithFestivalStatus.type)}
+>>>>>>> main
             </div>
 
             {/* Título */}
             <h1 className="text-3xl font-bold text-gray-800 mb-6">
+<<<<<<< HEAD
               {event.name}
+=======
+              {eventWithFestivalStatus.name}
+>>>>>>> main
             </h1>
 
             {/* Información básica */}
@@ -223,34 +287,58 @@ export default function EventDetail({ eventId }: EventDetailProps) {
               <div className="space-y-3">
                 <div className="flex items-center text-gray-600">
                   <Calendar className="w-5 h-5 mr-3 text-festival-orange" />
+<<<<<<< HEAD
                   <span>{formatEventDate(event.date)}</span>
+=======
+                  <span>{formatEventDate(eventWithFestivalStatus.date)}</span>
+>>>>>>> main
                 </div>
                 
                 <div className="flex items-center text-gray-600">
                   <Clock className="w-5 h-5 mr-3 text-festival-orange" />
+<<<<<<< HEAD
                   <span>{formatEventTime(event.time)} horas</span>
+=======
+                  <span>{formatEventTime(eventWithFestivalStatus.time)} horas</span>
+>>>>>>> main
                 </div>
               </div>
               
               <div className="space-y-3">
                 <div className="flex items-center text-gray-600">
                   <MapPin className="w-5 h-5 mr-3 text-festival-orange" />
+<<<<<<< HEAD
                   <span>{event.location}</span>
+=======
+                  <span>{eventWithFestivalStatus.location}</span>
+>>>>>>> main
                 </div>
                 
                 <div className="flex items-center text-gray-600">
                   <User className="w-5 h-5 mr-3 text-festival-orange" />
+<<<<<<< HEAD
                   <span>{event.organizer}</span>
+=======
+                  <span>{eventWithFestivalStatus.organizer}</span>
+>>>>>>> main
                 </div>
               </div>
             </div>
 
             {/* Descripción */}
+<<<<<<< HEAD
             {event.description && (
               <div>
                 <Separator className="my-4" />
                 <h3 className="font-semibold text-gray-800 mb-2">Descripción</h3>
                 <p className="text-gray-600 leading-relaxed">{event.description}</p>
+=======
+            {eventWithFestivalStatus.description && (
+              <div>
+                <Separator className="my-4" />
+                <h3 className="font-semibold text-gray-800 mb-2">Descripción</h3>
+                <p className="text-gray-600 leading-relaxed">{eventWithFestivalStatus.description}</p>
+>>>>>>> main
               </div>
             )}
           </CardContent>
@@ -318,7 +406,11 @@ export default function EventDetail({ eventId }: EventDetailProps) {
             isOpen={showUploadModal}
             onClose={() => setShowUploadModal(false)}
             eventId={eventId}
+<<<<<<< HEAD
             eventName={event.name}
+=======
+            eventName={eventWithFestivalStatus.name}
+>>>>>>> main
           />
         </Suspense>
       )}
