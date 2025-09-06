@@ -18,7 +18,10 @@ export const useCookieConsent = () => {
 
   useEffect(() => {
     const savedConsent = localStorage.getItem('cookie-consent');
-    if (savedConsent) {
+    const savedVersion = localStorage.getItem('cookie-consent-version');
+    const currentVersion = '2.0'; // Versión actualizada para incluir términos de imágenes
+    
+    if (savedConsent && savedVersion === currentVersion) {
       try {
         const parsed = JSON.parse(savedConsent);
         setConsent(parsed);
@@ -28,7 +31,8 @@ export const useCookieConsent = () => {
         setShowBanner(true);
       }
     } else {
-      // No consent saved, show banner
+      // No consent saved or version changed, show banner
+      setConsent(null);
       setShowBanner(true);
     }
   }, []);
@@ -41,12 +45,14 @@ export const useCookieConsent = () => {
     };
     setConsent(fullConsent);
     localStorage.setItem('cookie-consent', JSON.stringify(fullConsent));
+    localStorage.setItem('cookie-consent-version', '2.0');
     setShowBanner(false);
   };
 
   const acceptNecessary = () => {
     setConsent(DEFAULT_CONSENT);
     localStorage.setItem('cookie-consent', JSON.stringify(DEFAULT_CONSENT));
+    localStorage.setItem('cookie-consent-version', '2.0');
     setShowBanner(false);
   };
 
@@ -54,6 +60,7 @@ export const useCookieConsent = () => {
     const finalConsent = { ...customConsent, necessary: true }; // Always keep necessary as true
     setConsent(finalConsent);
     localStorage.setItem('cookie-consent', JSON.stringify(finalConsent));
+    localStorage.setItem('cookie-consent-version', '2.0');
     setShowBanner(false);
   };
 

@@ -1,10 +1,11 @@
-import { Calendar, Clock, MapPin, Heart } from "lucide-react";
+import { Calendar, Clock, MapPin, Heart, Eye, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "wouter";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
-import { trackFavoriteToggle } from "@/lib/festival-analytics";
+import { trackFavoriteToggle, trackEventDetailShare } from "@/lib/festival-analytics";
 
 interface EventCardProps {
   event: FestivalEvent;
@@ -14,6 +15,33 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, isFavorite, onToggleFavorite, currentFavoritesCount }: EventCardProps) {
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Evitar navegación cuando se hace click en share
+    e.stopPropagation(); // Evitar propagación al contenedor padre
+    
+    const eventUrl = `${window.location.origin}/evento/${event.id}`;
+    const shareData = {
+      title: event.name,
+      text: `¡Ven a ${event.name} en las Fiestas de Mislata!`,
+      url: eventUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        trackEventDetailShare(event.id, 'native_card');
+      } catch (error) {
+        // User cancelled or error occurred
+        console.log('Share cancelled or failed');
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(eventUrl);
+      trackEventDetailShare(event.id, 'clipboard_card');
+      // TODO: Show toast notification "¡Enlace copiado!"
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'ongoing':
@@ -100,9 +128,11 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
               {getCategoryBadge(event.category)}
               {getTypeBadge(event.type)}
             </div>
-            <h3 className={`text-xl font-semibold ${getTextColor(event.status)} mb-2`}>
-              {event.name}
-            </h3>
+            <Link href={`/evento/${event.id}`} className="block">
+              <h3 className={`text-xl font-semibold ${getTextColor(event.status)} mb-2 hover:text-festival-orange transition-colors cursor-pointer`}>
+                {event.name}
+              </h3>
+            </Link>
             <div className={`flex items-center ${getSubTextColor(event.status)} space-x-4 text-sm mb-3`}>
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-2" />
@@ -128,23 +158,45 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
               </div>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              onToggleFavorite();
-              
-              // Track favoritos
-              trackFavoriteToggle(
-                event,
-                isFavorite ? 'remove' : 'add',
-                currentFavoritesCount
-              );
-            }}
-            className="ml-4 text-gray-400 hover:text-festival-red transition-colors"
-          >
-            <Heart className={`w-5 h-5 ${isFavorite ? 'fill-festival-red text-festival-red' : ''}`} />
-          </Button>
+          <div className="flex items-center space-x-1 ml-4">
+            <Link href={`/evento/${event.id}`}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-400 hover:text-festival-orange transition-colors h-8 w-8"
+                title="Ver detalles"
+              >
+                <Eye className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleShare}
+              className="text-gray-400 hover:text-blue-500 transition-colors h-8 w-8"
+              title="Compartir evento"
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                onToggleFavorite();
+                
+                // Track favoritos
+                trackFavoriteToggle(
+                  event,
+                  isFavorite ? 'remove' : 'add',
+                  currentFavoritesCount
+                );
+              }}
+              className="text-gray-400 hover:text-festival-red transition-colors h-8 w-8"
+              title={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+            >
+              <Heart className={`w-4 h-4 ${isFavorite ? 'fill-festival-red text-festival-red' : ''}`} />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
