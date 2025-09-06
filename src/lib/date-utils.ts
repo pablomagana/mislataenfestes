@@ -34,37 +34,26 @@ export function formatEventDateTime(dateString: string, timeString: string): str
   }
 }
 
-export function isEventOngoing(dateString: string, timeString: string): boolean {
-  try {
-    const eventDate = parse(`${dateString} ${timeString}`, "yyyy-MM-dd HH:mm", new Date());
-    const now = new Date();
-    const eventEnd = new Date(eventDate.getTime() + (2 * 60 * 60 * 1000)); // Assume 2 hour duration
-    
-    return now >= eventDate && now <= eventEnd;
-  } catch (error) {
-    return false;
-  }
+import { 
+  isEventOngoingFestival, 
+  isEventUpcomingFestival, 
+  isEventFinishedFestival 
+} from './festival-time';
+
+type EventBasic = {
+  date: string;
+  time: string;
+  id?: string;
+};
+
+export function isEventOngoing(dateString: string, timeString: string, allDayEvents?: EventBasic[]): boolean {
+  return isEventOngoingFestival(dateString, timeString, allDayEvents);
 }
 
-export function isEventUpcoming(dateString: string, timeString: string): boolean {
-  try {
-    const eventDate = parse(`${dateString} ${timeString}`, "yyyy-MM-dd HH:mm", new Date());
-    const now = new Date();
-    
-    return eventDate > now;
-  } catch (error) {
-    return false;
-  }
+export function isEventUpcoming(dateString: string, timeString: string, allDayEvents?: EventBasic[]): boolean {
+  return isEventUpcomingFestival(dateString, timeString, allDayEvents);
 }
 
-export function isEventFinished(dateString: string, timeString: string): boolean {
-  try {
-    const eventDate = parse(`${dateString} ${timeString}`, "yyyy-MM-dd HH:mm", new Date());
-    const now = new Date();
-    const eventEnd = new Date(eventDate.getTime() + (2 * 60 * 60 * 1000)); // Assume 2 hour duration
-    
-    return now > eventEnd;
-  } catch (error) {
-    return false;
-  }
+export function isEventFinished(dateString: string, timeString: string, allDayEvents?: EventBasic[]): boolean {
+  return isEventFinishedFestival(dateString, timeString, allDayEvents);
 }

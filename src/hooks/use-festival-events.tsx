@@ -10,45 +10,41 @@ const getStaticEvents = (): Promise<FestivalEvent[]> => {
   return Promise.resolve(staticEvents);
 };
 
-// Función auxiliar para calcular el estado del evento basado en la fecha/hora actual
-function calculateEventStatus(eventDate: string, eventTime: string): string {
-  try {
-    const now = new Date();
-    const spanishOffset = 2; // UTC+2 para horario de verano español
-    const spanishTime = new Date(now.getTime() + (spanishOffset * 60 * 60 * 1000));
-    
-    const [year, month, day] = eventDate.split('-').map(Number);
-    const [hours, minutes] = eventTime.split(':').map(Number);
-    
-    const eventDateTime = new Date(Date.UTC(year, month - 1, day, hours - spanishOffset, minutes));
-    const eventEndTime = new Date(eventDateTime.getTime() + (2 * 60 * 60 * 1000)); // 2 horas de duración
-    
-    if (spanishTime < eventDateTime) {
-      return 'upcoming';
-    } else if (spanishTime >= eventDateTime && spanishTime <= eventEndTime) {
-      return 'ongoing';
-    } else {
-      return 'finished';
+import { calculateEventStatusFestival } from '@/lib/festival-time';
+
+// Función auxiliar para calcular el estado de todos los eventos considerando el siguiente evento
+function calculateEventsStatusWithNextEvent(events: FestivalEvent[]): FestivalEvent[] {
+  // Agrupar eventos por fecha
+  const eventsByDate = events.reduce((acc, event) => {
+    if (!acc[event.date]) {
+      acc[event.date] = [];
     }
-  } catch (error) {
-    // Si hay error en el parseo de fecha/hora, devolver 'upcoming' por defecto
-    console.warn('Error calculando estado del evento:', error);
-    return 'upcoming';
-  }
+    acc[event.date].push(event);
+    return acc;
+  }, {} as Record<string, FestivalEvent[]>);
+
+  // Calcular estado para cada evento considerando los otros eventos del mismo día
+  return events.map(event => {
+    const dayEvents = eventsByDate[event.date] || [];
+    // Ordenar eventos del día por hora
+    dayEvents.sort((a, b) => a.time.localeCompare(b.time));
+    
+    return {
+      ...event,
+      status: calculateEventStatusFestival(event.date, event.time, dayEvents)
+    };
+  });
 }
 
 export function useFestivalEvents() {
   return useQuery<FestivalEvent[]>({
-    queryKey: ['events'],
+    queryKey: ['events', new Date().getHours(), new Date().getMinutes()], // Forzar recálculo cada minuto
     queryFn: async () => {
       const events = await getStaticEvents();
-      // Actualizar status dinámicamente basado en el tiempo actual
-      return events.map(event => ({
-        ...event,
-        status: calculateEventStatus(event.date, event.time)
-      }));
+      // Actualizar status considerando cuando termina cada evento (siguiente evento)
+      return calculateEventsStatusWithNextEvent(events);
     },
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 1, // 1 minuto para debug
   });
 }
 
@@ -57,12 +53,8 @@ export function useFestivalEventsByCategory(category: string) {
     queryKey: ['events', 'category', category],
     queryFn: async () => {
       const events = await getStaticEvents();
-      return events
-        .filter(event => event.category === category)
-        .map(event => ({
-          ...event,
-          status: calculateEventStatus(event.date, event.time)
-        }));
+      const filteredEvents = events.filter(event => event.category === category);
+      return calculateEventsStatusWithNextEvent(filteredEvents);
     },
     enabled: !!category,
     staleTime: 1000 * 60 * 5,
@@ -74,12 +66,8 @@ export function useFestivalEventsByStatus(status: string) {
     queryKey: ['events', 'status', status],
     queryFn: async () => {
       const events = await getStaticEvents();
-      return events
-        .map(event => ({
-          ...event,
-          status: calculateEventStatus(event.date, event.time)
-        }))
-        .filter(event => event.status === status);
+      const eventsWithStatus = calculateEventsStatusWithNextEvent(events);
+      return eventsWithStatus.filter(event => event.status === status);
     },
     enabled: !!status,
     staleTime: 1000 * 60 * 5,
@@ -92,17 +80,13 @@ export function useSearchFestivalEvents(query: string) {
     queryFn: async () => {
       const events = await getStaticEvents();
       const searchQuery = query.toLowerCase();
-      return events
-        .filter(event => 
-          event.name.toLowerCase().includes(searchQuery) ||
-          event.location.toLowerCase().includes(searchQuery) ||
-          event.organizer.toLowerCase().includes(searchQuery) ||
-          event.type.toLowerCase().includes(searchQuery)
-        )
-        .map(event => ({
-          ...event,
-          status: calculateEventStatus(event.date, event.time)
-        }));
+      const filteredEvents = events.filter(event => 
+        event.name.toLowerCase().includes(searchQuery) ||
+        event.location.toLowerCase().includes(searchQuery) ||
+        event.organizer.toLowerCase().includes(searchQuery) ||
+        event.type.toLowerCase().includes(searchQuery)
+      );
+      return calculateEventsStatusWithNextEvent(filteredEvents);
     },
     enabled: !!query && query.length > 2,
     staleTime: 1000 * 60 * 2,
