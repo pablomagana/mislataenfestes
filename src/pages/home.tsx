@@ -4,6 +4,7 @@ import EventCard from "@/components/event-card";
 import FilterSidebar from "@/components/filter-sidebar";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useEventPhotoStats } from "@/hooks/use-event-photos";
 import { Button } from "@/components/ui/button";
 import { OutboundLink } from "@/components/analytics";
 import type { FilterState } from "@/types/filters";
@@ -11,17 +12,21 @@ import type { FilterState } from "@/types/filters";
 // Lazy load heavy modals
 const FavoritesModal = lazy(() => import("@/components/favorites-modal"));
 const CalendarModal = lazy(() => import("@/components/calendar-modal"));
+const PhotoUploadModal = lazy(() => import("@/components/photo-upload-modal"));
 
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Camera, Clock, MapPin, Users, Search, X } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
-import { formatEventDate } from "@/lib/date-utils";
+import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import { trackScrollToTop, trackScrollToDate } from "@/lib/festival-analytics";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedEventForUpload, setSelectedEventForUpload] = useState<FestivalEvent | null>(null);
   
   // Filter states
   const [filters, setFilters] = useState<FilterState>({
@@ -161,6 +166,70 @@ export default function Home() {
     return Object.keys(futureEventsByDate).sort();
   }, [futureEventsByDate]);
 
+  // Helper function to calculate event end time
+  const getEventEndTime = (event: FestivalEvent, allDayEvents: FestivalEvent[]) => {
+    const [hours, minutes] = event.time.split(':').map(Number);
+    const eventStartTime = hours * 100 + (minutes || 0);
+    
+    // Find the next event on the same day
+    const nextEvent = allDayEvents.find(e => {
+      if (e.id === event.id) return false;
+      const [nextHours, nextMinutes] = e.time.split(':').map(Number);
+      const nextEventTime = nextHours * 100 + (nextMinutes || 0);
+      return nextEventTime > eventStartTime;
+    });
+    
+    if (nextEvent) {
+      // Event ends when the next event starts
+      const [nextHours, nextMinutes] = nextEvent.time.split(':').map(Number);
+      return nextHours * 100 + (nextMinutes || 0);
+    } else {
+      // No next event, use 2 hours maximum
+      return eventStartTime + 200;
+    }
+  };
+
+  // Get current event (happening now or next event of today)
+  const currentEvent = useMemo(() => {
+    const now = new Date();
+    const currentTime = now.getHours() * 100 + now.getMinutes(); // HHMM format
+    
+    // First, look for events happening right now
+    const ongoingEvents = todayEvents.filter(event => {
+      const [hours, minutes] = event.time.split(':').map(Number);
+      const eventStartTime = hours * 100 + (minutes || 0);
+      const eventEndTime = getEventEndTime(event, todayEvents);
+      
+      return currentTime >= eventStartTime && currentTime < eventEndTime;
+    });
+
+    // If there are ongoing events, return the first one
+    if (ongoingEvents.length > 0) {
+      return ongoingEvents[0];
+    }
+
+    // If no ongoing events, return the next event of today
+    const upcomingTodayEvents = todayEvents.filter(event => {
+      const [hours, minutes] = event.time.split(':').map(Number);
+      const eventStartTime = hours * 100 + (minutes || 0);
+      return currentTime < eventStartTime;
+    });
+
+    if (upcomingTodayEvents.length > 0) {
+      return upcomingTodayEvents[0];
+    }
+
+    // If no events today, return the very next event from future events
+    if (futureEvents.length > 0) {
+      return futureEvents[0];
+    }
+
+    return null;
+  }, [todayEvents, futureEvents]);
+
+  // Get photo stats for current event (after currentEvent is defined)
+  const currentEventStats = useEventPhotoStats(currentEvent?.id || "");
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     trackScrollToTop();
@@ -179,6 +248,18 @@ export default function Home() {
       const eventsCount = futureEventsByDate[date]?.length || 0;
       trackScrollToDate(date, eventsCount);
     }
+  };
+
+  // Handle photo upload for current event
+  const handleUploadToCurrentEvent = (event: FestivalEvent) => {
+    setSelectedEventForUpload(event);
+    setShowUploadModal(true);
+  };
+
+  // Close upload modal
+  const handleCloseUploadModal = () => {
+    setShowUploadModal(false);
+    setSelectedEventForUpload(null);
   };
 
   // Función para obtener filtros activos
@@ -357,27 +438,110 @@ export default function Home() {
 
           {/* Contenido principal */}
           <div className="flex-1 min-w-0">
+        
+        {/* Current Event - Quick Photo Upload Section */}
+        {currentEvent && (
+          <div className="mb-8">
+            <Card className="bg-gradient-to-br from-festival-orange to-festival-red text-white shadow-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                      <span className="text-white/90 text-sm font-medium uppercase tracking-wide">
+                        {(() => {
+                          if (currentEvent.date !== today) return "Próximo evento";
+                          
+                          const now = new Date();
+                          const currentTime = now.getHours() * 100 + now.getMinutes();
+                          const [hours, minutes] = currentEvent.time.split(':').map(Number);
+                          const eventStartTime = hours * 100 + (minutes || 0);
+                          const eventEndTime = getEventEndTime(currentEvent, todayEvents);
+                          
+                          if (currentTime >= eventStartTime && currentTime < eventEndTime) {
+                            const endHours = Math.floor(eventEndTime / 100);
+                            const endMinutes = eventEndTime % 100;
+                            return `En curso hasta las ${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+                          } else {
+                            return "Próximo evento";
+                          }
+                        })()}
+                      </span>
+                    </div>
+                    
+                    <h2 className="text-2xl lg:text-3xl font-bold mb-3">
+                      {currentEvent.name}
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-white/90">
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-2" />
+                        <span>{formatEventTime(currentEvent.time)} horas</span>
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        <span>{currentEvent.location}</span>
+                      </div>
+                    </div>
+                    
+                    {currentEvent.date !== today && (
+                      <div className="mt-2 text-white/80 text-sm">
+                        {formatEventDate(currentEvent.date)}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="lg:flex-shrink-0">
+                    <div className="text-center">
+                      <Button
+                        onClick={() => handleUploadToCurrentEvent(currentEvent)}
+                        size="lg"
+                        className="bg-white text-festival-orange hover:bg-white/90 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold px-8"
+                      >
+                        <Camera className="w-5 h-5 mr-2" />
+                        Subir Fotos Ahora
+                      </Button>
+                      
+                      {/* Estadísticas de fotos */}
+                      <div className="mt-3 px-4">
+                        {currentEventStats.totalPhotos > 0 ? (
+                          <p className="text-white/90 text-sm">
+                            📸 <span className="font-semibold">{currentEventStats.totalPhotos}</span> foto{currentEventStats.totalPhotos !== 1 ? 's' : ''} compartida{currentEventStats.totalPhotos !== 1 ? 's' : ''}
+                            {currentEventStats.photosToday > 0 && (
+                              <span className="text-white/80">
+                                {" "}• {currentEventStats.photosToday} hoy
+                              </span>
+                            )}
+                          </p>
+                        ) : (
+                          <p className="text-white/80 text-sm">
+                            ¡Sé el primero en compartir fotos!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Today's Events Section */}
         {todayEvents.length > 0 && (
           <div 
             ref={(el) => dateRefs.current[today] = el}
-            className="mb-8"
+            className="mb-8 space-y-4"
           >
-            <div className="bg-gradient-to-r from-festival-orange to-festival-red rounded-xl p-6 mb-6 text-white">
-              <p className="text-lg opacity-90">{formatEventDate(today)}</p>
-            </div>
-            
-            <div className="space-y-4">
-              {todayEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  isFavorite={isFavorite(event.id)}
-                  onToggleFavorite={() => toggleFavorite(event.id)}
-                  currentFavoritesCount={favorites.size}
-                />
-              ))}
-            </div>
+            {todayEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                isFavorite={isFavorite(event.id)}
+                onToggleFavorite={() => toggleFavorite(event.id)}
+                currentFavoritesCount={favorites.size}
+              />
+            ))}
           </div>
         )}
 
@@ -466,6 +630,17 @@ export default function Home() {
             events={allEvents}
             favoriteEventIds={Array.from(favorites)}
             onDayClick={scrollToDate}
+          />
+        </Suspense>
+      )}
+
+      {showUploadModal && selectedEventForUpload && (
+        <Suspense fallback={<div>Cargando...</div>}>
+          <PhotoUploadModal
+            isOpen={showUploadModal}
+            onClose={handleCloseUploadModal}
+            eventId={selectedEventForUpload.id}
+            eventName={selectedEventForUpload.name}
           />
         </Suspense>
       )}

@@ -46,9 +46,25 @@ export async function uploadPhotos(eventId: string, files: File[]): Promise<Uplo
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
+        
+        // Mejorar mensajes de error para Storage
+        let storageError = `Error al subir ${file.name}`;
+        
+        if (uploadError.message.includes('Bucket not found')) {
+          storageError = `Error de configuración: No se encuentra el almacén de fotos. Contacta con soporte. info@mislataenfestes.es`;
+        } else if (uploadError.message.includes('File size too large')) {
+          storageError = `${file.name} es demasiado grande. Máximo 5MB permitidos.`;
+        } else if (uploadError.message.includes('Invalid file type')) {
+          storageError = `${file.name} tiene un formato no válido. Solo JPG, PNG y WebP permitidos.`;
+        } else if (uploadError.message.includes('permission')) {
+          storageError = `Sin permisos para subir ${file.name}. Verifica tu conexión.`;
+        } else {
+          storageError = `Error técnico al subir ${file.name}: ${uploadError.message}`;
+        }
+        
         results.push({ 
           success: false, 
-          error: `Error al subir ${file.name}: ${uploadError.message}` 
+          error: storageError
         });
         continue;
       }
@@ -93,9 +109,25 @@ export async function uploadPhotos(eventId: string, files: File[]): Promise<Uplo
         console.error('Database error:', dbError);
         // Limpiar archivos subidos si falla la DB
         await cleanupUploadedFiles([originalPath, thumbnailPath]);
+        
+        // Mejorar mensajes de error para el usuario
+        let userFriendlyError = `Error al guardar ${file.name}`;
+        
+        if (dbError.message.includes('row-level security policy')) {
+          userFriendlyError = `Error de permisos al guardar ${file.name}. Por favor, inténtalo de nuevo. Si el problema persiste, contacta con soporte.`;
+        } else if (dbError.message.includes('duplicate key')) {
+          userFriendlyError = `${file.name} ya existe. Intenta con otro archivo.`;
+        } else if (dbError.message.includes('permission denied')) {
+          userFriendlyError = `Sin permisos para subir ${file.name}. Verifica tu conexión.`;
+        } else if (dbError.message.includes('connection')) {
+          userFriendlyError = `Error de conexión al subir ${file.name}. Verifica tu internet.`;
+        } else {
+          userFriendlyError = `Error técnico al subir ${file.name}. Código: ${dbError.code || 'Desconocido'}`;
+        }
+        
         results.push({ 
           success: false, 
-          error: `Error al guardar ${file.name}: ${dbError.message}` 
+          error: userFriendlyError
         });
         continue;
       }
