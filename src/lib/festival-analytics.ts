@@ -227,3 +227,121 @@ export const trackFestivalPeriodUsage = (
     usage_context: isActiveFestivalPeriod ? 'during_festival' : 'planning_phase',
   });
 };
+
+// ---- Eventos de detalles de evento ----
+
+/**
+ * Trackea visualización de la página de detalles de evento
+ */
+export const trackEventDetailView = (
+  eventId: string, 
+  eventName: string, 
+  source: string = 'event_card'
+) => {
+  trackEvent('event_detail_view', {
+    event_id: eventId,
+    event_name: eventName,
+    source: source
+  });
+};
+
+/**
+ * Trackea compartir detalles de evento
+ */
+export const trackEventDetailShare = (eventId: string, platform: string = 'native') => {
+  trackEvent('event_detail_share', {
+    event_id: eventId,
+    platform: platform
+  });
+};
+
+/**
+ * Trackea navegación de vuelta a la lista de eventos
+ */
+export const trackBackToEvents = (eventId: string, timeSpent: number) => {
+  trackEvent('back_to_events', {
+    event_id: eventId,
+    time_spent_seconds: Math.round(timeSpent / 1000)
+  });
+};
+
+// ---- Eventos de galería de fotos ----
+
+/**
+ * Trackea apertura de galería de fotos
+ */
+export const trackPhotoGalleryOpen = (eventId: string, photoCount: number) => {
+  trackEvent('photo_gallery_open', {
+    event_id: eventId,
+    photo_count: photoCount
+  });
+};
+
+/**
+ * Trackea visualización de foto individual
+ */
+export const trackPhotoView = (eventId: string, photoId: string, viewMode: string = 'lightbox') => {
+  trackEvent('photo_view', {
+    event_id: eventId,
+    photo_id: photoId,
+    view_mode: viewMode
+  });
+};
+
+/**
+ * Trackea compartir foto
+ */
+export const trackPhotoShare = (eventId: string, photoId: string, platform: string) => {
+  trackEvent('photo_share', {
+    event_id: eventId,
+    photo_id: photoId,
+    platform: platform
+  });
+};
+
+// ---- Eventos de subida de fotos ----
+
+/**
+ * Trackea inicio de subida de fotos
+ */
+export const trackPhotoUploadStart = (eventId: string, fileCount: number) => {
+  trackEvent('photo_upload_start', {
+    event_id: eventId,
+    file_count: fileCount
+  });
+};
+
+/**
+ * Trackea subida exitosa de fotos
+ */
+export const trackPhotoUploadSuccess = (eventId: string, photosUploaded: number, uploadTime: number) => {
+  trackEvent('photo_upload_success', {
+    event_id: eventId,
+    photos_uploaded: photosUploaded,
+    upload_time_ms: uploadTime
+  });
+};
+
+/**
+ * Trackea error en subida de fotos
+ */
+export const trackPhotoUploadError = (eventId: string, errorType: string, errorMessage?: string) => {
+  trackEvent('photo_upload_error', {
+    event_id: eventId,
+    error_type: errorType,
+    error_message: errorMessage
+  });
+};
+
+// ---- Eventos de moderación ----
+
+/**
+ * Trackea reporte de foto
+ */
+export const trackPhotoReport = (eventId: string, photoId: string, reason?: string) => {
+  trackEvent('photo_report', {
+    event_id: eventId,
+    photo_id: photoId,
+    reason: reason
+  });
+};

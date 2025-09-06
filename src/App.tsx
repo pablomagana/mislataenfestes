@@ -11,6 +11,7 @@ import CookieBanner from "@/components/cookie-banner";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 import Home from "@/pages/home";
 import About from "@/pages/about";
+import EventDetail from "@/pages/event-detail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,9 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
+      <Route path="/evento/:eventId">
+        {(params) => <EventDetail eventId={params.eventId} />}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
