@@ -148,6 +148,28 @@ export default function PhotoUploadModal({
           </DialogTitle>
         </DialogHeader>
 
+        {/* Disclaimer Legal */}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <div className="flex items-start space-x-2">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-semibold text-red-800 mb-2">
+                ⚖️ Responsabilidad Legal - LEE ANTES DE SUBIR
+              </p>
+              <ul className="text-red-700 space-y-1 text-xs">
+                <li>• <strong>Confirmas</strong> que eres propietario de las imágenes o tienes autorización para publicarlas</li>
+                <li>• <strong>Aceptas</strong> la responsabilidad total sobre el contenido subido</li>
+                <li>• <strong>Autorizas</strong> el uso de las imágenes para promoción de las fiestas</li>
+                <li>• <strong>Te comprometes</strong> a no subir contenido ofensivo, ilegal o que viole derechos</li>
+                <li>• <strong>Entiendes</strong> que las fotos serán públicas y moderadas por el equipo</li>
+              </ul>
+              <p className="mt-2 font-medium text-red-800 text-xs bg-red-100 p-2 rounded border">
+                ⚠️ <strong>IMPORTANTE:</strong> Al hacer clic en "Subir fotos" confirmas haber leído y aceptas TODOS estos términos de responsabilidad completamente.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-6">
           {/* Validation Errors */}
           {validationErrors.length > 0 && (
