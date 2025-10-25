@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, lazy, Suspense } from "react";
 import Header from "@/components/header";
 import EventCard from "@/components/event-card";
 import FilterSidebar from "@/components/filter-sidebar";
+import FestivalEndLanding from "@/components/festival-end-landing";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useEventPhotoStats } from "@/hooks/use-event-photos";
@@ -596,16 +597,22 @@ export default function Home() {
           </div>
         )}
 
-        {/* No events message */}
+        {/* No events message or Festival End Landing */}
         {todayEvents.length === 0 && futureDates.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-500 text-lg">
-              {searchQuery ? "No se encontraron eventos" : "No hay eventos programados"}
-            </div>
-            <div className="text-gray-400 text-sm mt-2">
-              {searchQuery && "Prueba a ajustar la búsqueda"}
-            </div>
-          </div>
+          <>
+            {searchQuery || hasActiveFilters ? (
+              <div className="text-center py-12">
+                <div className="text-gray-500 text-lg">
+                  No se encontraron eventos
+                </div>
+                <div className="text-gray-400 text-sm mt-2">
+                  Prueba a ajustar la búsqueda o los filtros
+                </div>
+              </div>
+            ) : (
+              <FestivalEndLanding />
+            )}
+          </>
         )}
           </div>
         </div>
