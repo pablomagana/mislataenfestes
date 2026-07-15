@@ -1,20 +1,16 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, Heart, Share2, Camera, MapPin, Calendar, Clock, User } from "lucide-react";
+import { ArrowLeft, Heart, Share2, MapPin, Calendar, Clock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useEvent } from "@/hooks/use-event";
-import { useEventPhotos, useEventPhotoStats } from "@/hooks/use-event-photos";
 import { useFavorites } from "@/hooks/use-favorites";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import { trackFavoriteToggle, trackEventDetailView, trackEventDetailShare, trackBackToEvents } from "@/lib/festival-analytics";
-import PhotoGallery from "@/components/photo-gallery";
 import LoadingSpinner from "@/components/loading-spinner";
-
-// Lazy load del modal de subida
-const PhotoUploadModal = lazy(() => import("@/components/photo-upload-modal"));
+import { useSeo, SITE_URL } from "@/hooks/use-seo";
 
 interface EventDetailProps {
   eventId: string;
@@ -22,13 +18,10 @@ interface EventDetailProps {
 
 export default function EventDetail({ eventId }: EventDetailProps) {
   const [, setLocation] = useLocation();
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [pageStartTime] = useState(Date.now());
-  
+
   // Data hooks
   const { data: event, isLoading: eventLoading, error: eventError } = useEvent(eventId);
-  const { data: photos = [], isLoading: photosLoading } = useEventPhotos(eventId);
-  const { totalPhotos, hasPhotos, recentPhotos } = useEventPhotoStats(eventId);
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   // Track page view when event loads
@@ -37,6 +30,16 @@ export default function EventDetail({ eventId }: EventDetailProps) {
       trackEventDetailView(event.id, event.name);
     }
   }, [event, eventLoading]);
+
+  useSeo({
+    title: event
+      ? `${event.name} · Fiestas de Mislata 2026`
+      : "Evento · Fiestas de Mislata 2026",
+    description: event
+      ? `${event.name} — ${formatEventDate(event.date)} a las ${formatEventTime(event.time)} en ${event.location}, Mislata. ${event.description || "Consulta el programa de las Fiestas de Mislata 2026."}`
+      : "Detalle de un evento de las Fiestas de Mislata 2026.",
+    path: `/evento/${eventId}`,
+  });
 
   // Loading state
   if (eventLoading) {
@@ -156,8 +159,36 @@ export default function EventDetail({ eventId }: EventDetailProps) {
     );
   };
 
+  const eventLdJson = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.name,
+    startDate: `${event.date}T${event.time}:00+02:00`,
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: event.location,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Mislata",
+        addressRegion: "Valencia",
+        addressCountry: "ES",
+      },
+    },
+    description: event.description || `${event.name} en las Fiestas de Mislata 2026`,
+    organizer: { "@type": "Organization", name: event.organizer },
+    url: `${SITE_URL}/evento/${event.id}`,
+    isAccessibleForFree: true,
+    image: `${SITE_URL}/og-image.png`,
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventLdJson) }}
+      />
       {/* Header con navegación */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 py-3">
@@ -256,72 +287,7 @@ export default function EventDetail({ eventId }: EventDetailProps) {
           </CardContent>
         </Card>
 
-        {/* Sección de galería de fotos */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                  Galería Comunitaria
-                </h2>
-                <p className="text-gray-600">
-                  {totalPhotos > 0 
-                    ? `${totalPhotos} foto${totalPhotos !== 1 ? 's' : ''} compartida${totalPhotos !== 1 ? 's' : ''} por la comunidad`
-                    : 'Sé el primero en compartir una foto de este evento'
-                  }
-                </p>
-              </div>
-              
-              <Button
-                onClick={() => setShowUploadModal(true)}
-                className="bg-festival-orange hover:bg-festival-red text-white"
-              >
-                <Camera className="w-4 h-4 mr-2" />
-                Subir Fotos
-              </Button>
-            </div>
-
-            {/* Galería de fotos */}
-            {photosLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <LoadingSpinner />
-                <span className="ml-2 text-gray-600">Cargando fotos...</span>
-              </div>
-            ) : hasPhotos ? (
-              <PhotoGallery photos={photos} eventId={eventId} />
-            ) : (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">
-                  No hay fotos aún
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  ¡Sé el primero en compartir una foto de este evento!
-                </p>
-                <Button
-                  onClick={() => setShowUploadModal(true)}
-                  className="bg-festival-orange hover:bg-festival-red text-white"
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Subir Primera Foto
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </main>
-
-      {/* Modal de subida de fotos */}
-      {showUploadModal && (
-        <Suspense fallback={<div>Cargando...</div>}>
-          <PhotoUploadModal
-            isOpen={showUploadModal}
-            onClose={() => setShowUploadModal(false)}
-            eventId={eventId}
-            eventName={event.name}
-          />
-        </Suspense>
-      )}
     </div>
   );
 }

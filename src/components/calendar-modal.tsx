@@ -22,9 +22,9 @@ export default function CalendarModal({
   favoriteEventIds,
   onDayClick
 }: CalendarModalProps) {
-  // Festival period: August 23 - September 6, 2025
-  const festivalStart = parseISO('2025-08-23');
-  const festivalEnd = parseISO('2025-09-06');
+  // Festival period: August 23 - September 6, 2026
+  const festivalStart = parseISO('2026-08-23');
+  const festivalEnd = parseISO('2026-09-06');
   
   // Get the weeks that contain the festival dates
   const startWeek = startOfWeek(festivalStart, { weekStartsOn: 1 }); // Monday start
@@ -99,7 +99,7 @@ export default function CalendarModal({
           {/* Month headers */}
           <div className="text-center mb-3">
             <div className="text-base sm:text-lg font-semibold text-gray-700">
-              Agosto - Septiembre 2025
+              Agosto - Septiembre 2026
             </div>
           </div>
 

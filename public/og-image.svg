@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Fiestas de Mislata 2026">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsl(31 91% 42%)"/>
+      <stop offset="1" stop-color="hsl(0 79% 50%)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1050" cy="120" r="220" fill="#ffffff" opacity="0.06"/>
+  <circle cx="140" cy="540" r="260" fill="#ffffff" opacity="0.06"/>
+  <text x="600" y="250" text-anchor="middle" font-family="Poppins, Inter, Arial, sans-serif" font-size="96" font-weight="700" fill="#ffffff">FIESTAS DE MISLATA</text>
+  <text x="600" y="380" text-anchor="middle" font-family="Poppins, Inter, Arial, sans-serif" font-size="200" font-weight="800" fill="#ffffff">2026</text>
+  <text x="600" y="470" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="500" fill="#ffffff" opacity="0.95">Del 23 de agosto al 6 de septiembre</text>
+  <text x="600" y="560" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="600" fill="#ffffff" opacity="0.85">mislataenfestes.es</text>
+</svg>

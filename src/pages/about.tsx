@@ -4,14 +4,22 @@ import { Music, MapPin, Calendar, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OutboundLink } from "@/components/analytics";
 import { Link } from "wouter";
+import { useSeo } from "@/hooks/use-seo";
 
 export default function About() {
+  useSeo({
+    title: "Programa Fiestas de Mislata 2026 · Patronales y Populares",
+    description:
+      "Guía de las Fiestas de Mislata 2026: música en directo, orquestas, mascletàs, Entrada Mora, procesiones, correfoc y actividades familiares del 23 de agosto al 6 de septiembre.",
+    path: "/about",
+  });
+
   const ldJson = {
     "@context": "https://schema.org",
     "@type": "Festival",
-    name: "Fiestas Patronales y Populares de Mislata 2025",
-    startDate: "2025-08-23",
-    endDate: "2025-09-06",
+    name: "Fiestas Patronales y Populares de Mislata 2026",
+    startDate: "2026-08-23",
+    endDate: "2026-09-06",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     eventStatus: "https://schema.org/EventScheduled",
     location: {
@@ -25,7 +33,7 @@ export default function About() {
       }
     },
     description:
-      "Programa completo de las Fiestas de Mislata 2025: música en directo, eventos, orquestas, mascletàs, procesiones y actividades familiares.",
+      "Programa completo de las Fiestas de Mislata 2026: música en directo, eventos, orquestas, mascletàs, procesiones y actividades familiares.",
     keywords: "Mislata, fiestas, fiestas patronales, fiestas populares, eventos, música, conciertos, programa",
     url: typeof window !== "undefined" ? window.location.href : "https://"
   };
@@ -61,10 +69,10 @@ export default function About() {
             {/* Intro SEO */}
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
-                Fiestas Patronales y Populares de Mislata 2025 – Programa completo de eventos
+                Fiestas Patronales y Populares de Mislata 2026 – Programa completo de eventos
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Las <strong>Fiestas de Mislata 2025</strong> llegan del <strong>23 de agosto al 6 de septiembre</strong> con una programación repleta de cultura, tradición, <strong>música</strong> en directo y actividades para todas las edades. Aquí encontrarás el <strong>programa completo</strong> de las <strong>Fiestas Patronales y Populares de Mislata</strong>, con todos los horarios, lugares y <strong>eventos</strong> destacados para que no te pierdas nada.
+                Las <strong>Fiestas de Mislata 2026</strong> llegan del <strong>23 de agosto al 6 de septiembre</strong> con una programación repleta de cultura, tradición, <strong>música</strong> en directo y actividades para todas las edades. Aquí encontrarás el <strong>programa completo</strong> de las <strong>Fiestas Patronales y Populares de Mislata</strong>, con todos los horarios, lugares y <strong>eventos</strong> destacados para que no te pierdas nada.
               </p>
             </div>
 
@@ -143,7 +151,7 @@ export default function About() {
                   </p>
 
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                    📍 Fiestas Populares de Mislata 2025
+                    📍 Fiestas Populares de Mislata 2026
                   </h3>
                   <p className="text-gray-600 mb-4">
                     Del 2 al 6 de septiembre el <strong>Recinto Ferial</strong> concentra la diversión con desfiles, conciertos, casetas y la esperada <strong>mascletà nocturna</strong> y el <strong>correfoc</strong>. La mejor <strong>música</strong> y los mejores <strong>eventos</strong> para cerrar las <strong>fiestas</strong>.
@@ -152,7 +160,7 @@ export default function About() {
               </div>
 
               <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-4">
-                Vive las Fiestas de Mislata 2025
+                Vive las Fiestas de Mislata 2026
               </h2>
               <p className="text-gray-600">
                 Las <strong>Fiestas de Mislata</strong> combinan tradición y modernidad: desde los actos religiosos y culturales más antiguos hasta los conciertos más actuales. Son el momento ideal para visitar el municipio, disfrutar de la gastronomía local y de un calendario repleto de <strong>eventos</strong> y <strong>música</strong>. Consulta el programa oficial, añade tus favoritos y organiza tu agenda para no perderte nada.
@@ -167,7 +175,7 @@ export default function About() {
               <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                 <div>
                   <p className="mb-2">
-                    <strong>Fechas:</strong> Del 23 de agosto al 6 de septiembre de <strong>2025</strong>
+                    <strong>Fechas:</strong> Del 23 de agosto al 6 de septiembre de <strong>2026</strong>
                   </p>
                   <p className="mb-2">
                     <strong>Ubicación:</strong> Diferentes espacios y plazas de <strong>Mislata</strong>
@@ -207,7 +215,7 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="mb-4">
             <h4 className="text-lg font-semibold text-gray-800 mb-2">
-              Fiestas de Mislata 2025
+              Fiestas de Mislata 2026
             </h4>
             <p className="text-gray-600 text-sm">
               Programa oficial de las <strong>fiestas patronales de Mislata</strong> con todos los 

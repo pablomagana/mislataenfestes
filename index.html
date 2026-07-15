@@ -3,16 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Fiestas Patronales de Mislata 2024 - Programa completo de eventos, música, espectáculos y celebraciones. Descubre todos los conciertos, actividades culturales y eventos festivos en Mislata." />
+    <meta name="description" content="Fiestas Patronales de Mislata 2026 - Programa completo de eventos, música, espectáculos y celebraciones. Descubre todos los conciertos, actividades culturales y eventos festivos en Mislata." />
     <meta name="keywords" content="Mislata, fiestas, música, eventos, conciertos, espectáculos, Valencia, fiestas patronales, programa festivo, actividades culturales" />
-    <meta property="og:title" content="Fiestas de Mislata 2024 - Eventos y Música" />
-    <meta property="og:description" content="Programa completo de las Fiestas Patronales de Mislata 2024. Eventos, música, conciertos y espectáculos del 23 de agosto al 6 de septiembre." />
+    <meta property="og:title" content="Fiestas de Mislata 2026 - Eventos y Música" />
+    <meta property="og:description" content="Programa completo de las Fiestas Patronales de Mislata 2026. Eventos, música, conciertos y espectáculos del 23 de agosto al 6 de septiembre." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://mislataenfestes.es" />
     <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="Mislata en Festes" />
+    <meta property="og:image" content="https://mislataenfestes.es/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Fiestas de Mislata 2024 - Eventos y Música" />
-    <meta name="twitter:description" content="Programa completo de las Fiestas Patronales de Mislata 2024. Eventos, música y espectáculos." />
+    <meta name="twitter:title" content="Fiestas de Mislata 2026 - Eventos y Música" />
+    <meta name="twitter:description" content="Programa completo de las Fiestas Patronales de Mislata 2026. Eventos, música y espectáculos." />
+    <meta name="twitter:image" content="https://mislataenfestes.es/og-image.png" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -26,17 +31,17 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="modulepreload" href="/src/main.tsx">
-    <title>Fiestas de Mislata 2025 - Eventos, Música y espectáculos</title>
+    <title>Fiestas de Mislata 2026 - Eventos, Música y espectáculos</title>
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Event",
-      "name": "Fiestas Patronales de Mislata 2025",
-      "description": "Programa completo de las Fiestas Patronales de Mislata 2025 con eventos, música, conciertos y espectáculos culturales.",
-      "startDate": "2024-08-23",
-      "endDate": "2024-09-06",
+      "name": "Fiestas Patronales de Mislata 2026",
+      "description": "Programa completo de las Fiestas Patronales de Mislata 2026 con eventos, música, conciertos y espectáculos culturales.",
+      "startDate": "2026-08-23",
+      "endDate": "2026-09-06",
       "location": {
         "@type": "Place",
         "name": "Mislata",
@@ -55,34 +60,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Block only Replit dev banner specifically
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
-              // Remove only Replit dev banner specifically
-              if (node.src && node.src.includes('replit-dev-banner.js')) {
-                console.log('Blocked Replit dev banner:', node.src);
-                node.remove();
-              }
-              // Block other Replit injections but preserve Cloudflare
-              if (node.src && node.src.includes('replit.com') && !node.src.includes('cloudflare')) {
-                console.log('Blocked Replit script:', node.src);
-                node.remove();
-              }
-            }
-          });
-        });
-      });
-      observer.observe(document, { childList: true, subtree: true });
-      
-      // Prevent Replit environment detection only on Replit domains
-      if (window.location.hostname.includes('replit') || window.location.hostname.includes('repl.co')) {
-        window.__REPLIT_ENV = undefined;
-        window.REPLIT_ENV = undefined;
-      }
-    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

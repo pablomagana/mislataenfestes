@@ -1,23 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import type { FestivalEvent } from '@shared/schema';
+import eventsData from '../data/events.json';
 
-// Simulamos la API de eventos por ahora, ya que los eventos están en JSON estático
+// Fuente única de datos: el mismo JSON estático que usa el listado
+const staticEvents: FestivalEvent[] = eventsData as FestivalEvent[];
+
 async function fetchEvent(eventId: string): Promise<FestivalEvent | null> {
-  try {
-    // Por ahora leemos del JSON estático
-    const response = await fetch('/api/events.json');
-    if (!response.ok) {
-      throw new Error('Error fetching events');
-    }
-    
-    const events: FestivalEvent[] = await response.json();
-    const event = events.find(e => e.id === eventId);
-    
-    return event || null;
-  } catch (error) {
-    console.error('Error fetching event:', error);
-    throw error;
-  }
+  const event = staticEvents.find(e => e.id === eventId);
+  return event || null;
 }
 
 // Hook para obtener un evento específico

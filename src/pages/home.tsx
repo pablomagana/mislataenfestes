@@ -5,31 +5,30 @@ import FilterSidebar from "@/components/filter-sidebar";
 import FestivalEndLanding from "@/components/festival-end-landing";
 import { useFestivalEvents } from "@/hooks/use-festival-events";
 import { useFavorites } from "@/hooks/use-favorites";
-import { useEventPhotoStats } from "@/hooks/use-event-photos";
 import { Button } from "@/components/ui/button";
 import { OutboundLink } from "@/components/analytics";
+import { Link } from "wouter";
 import type { FilterState } from "@/types/filters";
 
 // Lazy load heavy modals
 const FavoritesModal = lazy(() => import("@/components/favorites-modal"));
 const CalendarModal = lazy(() => import("@/components/calendar-modal"));
-const PhotoUploadModal = lazy(() => import("@/components/photo-upload-modal"));
 
-import { ArrowUp, Camera, Clock, MapPin, Users, Search, X } from "lucide-react";
+import { ArrowUp, Clock, MapPin, Users, Search, X } from "lucide-react";
 import type { FestivalEvent } from "@shared/schema";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import { trackScrollToTop, trackScrollToDate } from "@/lib/festival-analytics";
 import { toFestivalDate, getCurrentFestivalDate } from "@/lib/festival-time";
 import { Card, CardContent } from "@/components/ui/card";
+import festivalsData from "@/data/festivals.json";
+import { useSeo } from "@/hooks/use-seo";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesModal, setShowFavoritesModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [selectedEventForUpload, setSelectedEventForUpload] = useState<FestivalEvent | null>(null);
-  
+
   // Filter states
   const [filters, setFilters] = useState<FilterState>({
     patronales: false,
@@ -48,10 +47,21 @@ export default function Home() {
   const { data: allEvents = [], isLoading, error } = useFestivalEvents();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
+  useSeo({
+    title: "Fiestas de Mislata 2026 · Programa, eventos, música y espectáculos",
+    description:
+      "Programa completo de las Fiestas Patronales y Populares de Mislata 2026, del 23 de agosto al 6 de septiembre: conciertos, orquestas, mascletàs, procesiones y actividades para toda la familia.",
+    path: "/",
+  });
+
   // Get today's festival date (considering midnight events belong to previous day)
   const todayFestival = getCurrentFestivalDate();
   // Also keep regular today for date comparisons
   const today = new Date().toISOString().split('T')[0];
+
+  // Las fiestas solo se consideran "terminadas" cuando ha pasado la fecha de fin.
+  // Antes de esa fecha, un listado vacío significa "programa aún no publicado".
+  const festivalHasEnded = today > festivalsData.festivalsInfo.endDate;
 
   // Helper function to check if event is musical
   const isMusicalEvent = (event: FestivalEvent) => {
@@ -241,9 +251,6 @@ export default function Home() {
     return null;
   }, [todayEvents, futureEvents]);
 
-  // Get photo stats for current event (after currentEvent is defined)
-  const currentEventStats = useEventPhotoStats(currentEvent?.id || "");
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     trackScrollToTop();
@@ -262,18 +269,6 @@ export default function Home() {
       const eventsCount = futureEventsByDate[date]?.length || 0;
       trackScrollToDate(date, eventsCount);
     }
-  };
-
-  // Handle photo upload for current event
-  const handleUploadToCurrentEvent = (event: FestivalEvent) => {
-    setSelectedEventForUpload(event);
-    setShowUploadModal(true);
-  };
-
-  // Close upload modal
-  const handleCloseUploadModal = () => {
-    setShowUploadModal(false);
-    setSelectedEventForUpload(null);
   };
 
   // Función para obtener filtros activos
@@ -453,7 +448,7 @@ export default function Home() {
           {/* Contenido principal */}
           <div className="flex-1 min-w-0">
         
-        {/* Current Event - Quick Photo Upload Section */}
+        {/* Current / Next Event Highlight */}
         {currentEvent && (
           <div className="mb-8">
             <Card className="bg-gradient-to-br from-festival-orange to-festival-red text-white shadow-xl">
@@ -504,37 +499,6 @@ export default function Home() {
                         {formatEventDate(currentEvent.date)}
                       </div>
                     )}
-                  </div>
-                  
-                  <div className="lg:flex-shrink-0">
-                    <div className="text-center">
-                      <Button
-                        onClick={() => handleUploadToCurrentEvent(currentEvent)}
-                        size="lg"
-                        className="bg-white text-festival-orange hover:bg-white/90 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold px-8"
-                      >
-                        <Camera className="w-5 h-5 mr-2" />
-                        Subir Fotos Ahora
-                      </Button>
-                      
-                      {/* Estadísticas de fotos */}
-                      <div className="mt-3 px-4">
-                        {currentEventStats.totalPhotos > 0 ? (
-                          <p className="text-white/90 text-sm">
-                            📸 <span className="font-semibold">{currentEventStats.totalPhotos}</span> foto{currentEventStats.totalPhotos !== 1 ? 's' : ''} compartida{currentEventStats.totalPhotos !== 1 ? 's' : ''}
-                            {currentEventStats.photosToday > 0 && (
-                              <span className="text-white/80">
-                                {" "}• {currentEventStats.photosToday} hoy
-                              </span>
-                            )}
-                          </p>
-                        ) : (
-                          <p className="text-white/80 text-sm">
-                            ¡Sé el primero en compartir fotos!
-                          </p>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -609,8 +573,35 @@ export default function Home() {
                   Prueba a ajustar la búsqueda o los filtros
                 </div>
               </div>
-            ) : (
+            ) : festivalHasEnded ? (
               <FestivalEndLanding />
+            ) : (
+              <div className="min-h-[60vh] flex items-center justify-center px-4">
+                <Card className="max-w-3xl w-full bg-gradient-to-br from-festival-orange/10 via-white to-festival-red/10 border-2 border-festival-orange/20 shadow-xl">
+                  <CardContent className="p-8 md:p-12 text-center space-y-6">
+                    <div className="flex justify-center">
+                      <Clock className="w-14 h-14 text-festival-orange" />
+                    </div>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+                      Fiestas de Mislata {new Date().getFullYear()}: programa <span className="text-festival-orange">próximamente</span>
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                      Estamos preparando el <strong>programa de las Fiestas Patronales y Populares de Mislata {new Date().getFullYear()}</strong>.
+                      Vuelve pronto para consultar todos los eventos, conciertos, orquestas, mascletàs, procesiones y actividades para toda la familia.
+                    </p>
+                    <p className="text-base text-gray-600">
+                      Las <strong>fiestas de Mislata</strong> se celebran del <strong>23 de agosto al 6 de septiembre</strong> en las plazas y avenidas del municipio, con música en directo, tradición valenciana y actividades gratuitas al aire libre. En cuanto se publique el cartel oficial, aquí tendrás el <strong>programa completo</strong> con horarios y ubicaciones, y podrás guardar tus eventos favoritos.
+                    </p>
+                    <div className="pt-2">
+                      <Link href="/about">
+                        <Button className="bg-festival-orange hover:bg-festival-red text-white px-8 py-3 text-lg">
+                          Más sobre las Fiestas de Mislata
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </>
         )}
@@ -652,23 +643,12 @@ export default function Home() {
         </Suspense>
       )}
 
-      {showUploadModal && selectedEventForUpload && (
-        <Suspense fallback={<div>Cargando...</div>}>
-          <PhotoUploadModal
-            isOpen={showUploadModal}
-            onClose={handleCloseUploadModal}
-            eventId={selectedEventForUpload.id}
-            eventName={selectedEventForUpload.name}
-          />
-        </Suspense>
-      )}
-
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 shadow-md z-10">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center">
             <p className="text-gray-500 text-xs mb-1">
-              <strong>Fiestas de Mislata 2025</strong>
+              <strong>Fiestas de Mislata 2026</strong>
             </p>
             <p className="text-gray-500 text-xs">
               Desarrollada por {' '}

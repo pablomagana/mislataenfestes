@@ -1,8 +1,15 @@
 import { Link } from "wouter";
 import { useEffect } from "react";
 import { trackError404 } from "@/lib/analytics";
+import { useSeo } from "@/hooks/use-seo";
 
 export default function NotFound() {
+  useSeo({
+    title: "Página no encontrada · Fiestas de Mislata 2026",
+    description: "La página que buscas no existe. Vuelve al programa de las Fiestas de Mislata 2026.",
+    path: "/404",
+    noindex: true,
+  });
   useEffect(() => {
     // Trackea el error 404 cuando se monta el componente
     trackError404(window.location.pathname + window.location.search);
