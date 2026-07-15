@@ -5,3 +5,7 @@ server/public
 vite.config.ts.*
 *.tar.gz
 attached_assets
+# Lockfile omitido a propósito: se generaba en macOS y quedaba incompleto
+# para las dependencias nativas de Linux, rompiendo "npm ci" en Cloudflare.
+# Cloudflare usa "npm install" al no haber lockfile.
+package-lock.json
