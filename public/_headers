@@ -5,23 +5,13 @@
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
 
-# Archivos JavaScript y módulos
-/*.js
-  Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.mjs
-  Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
-
-# Archivos CSS
-/*.css
-  Content-Type: text/css; charset=utf-8
-  Cache-Control: public, max-age=31536000, immutable
-
-# Archivos de mapas
-/*.map
-  Content-Type: application/json; charset=utf-8
+# Assets con hash de Vite (/assets/*). Cloudflare Pages ya sirve el MIME
+# correcto por extensión, así que NO forzamos Content-Type (evita disfrazar
+# de JS el HTML del fallback SPA). Usamos revalidación por ETag en lugar de
+# 'immutable': si por una carrera de deploy el fallback llega a servirse en
+# una URL de asset, esa respuesta NO queda cacheada 1 año y se autocura.
+/assets/*
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Archivos de fuentes
 /*.woff2
