@@ -20,27 +20,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         format: 'es',
-        manualChunks: {
-          // React core - mantener juntos para evitar problemas de dependencias
-          'react-vendor': ['react', 'react-dom'],
-          // Router
-          'router': ['wouter'],
-          // Query client
-          'query': ['@tanstack/react-query'],
-          // UI Components (Radix UI)
-          'ui-components': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-label',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-popover'
-          ],
-          // Icons
-          'icons': ['lucide-react']
-        },
       },
     },
     target: 'es2020', // More modern target for better optimization
