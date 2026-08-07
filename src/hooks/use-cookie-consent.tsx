@@ -19,7 +19,7 @@ export const useCookieConsent = () => {
   useEffect(() => {
     const savedConsent = localStorage.getItem('cookie-consent');
     const savedVersion = localStorage.getItem('cookie-consent-version');
-    const currentVersion = '2.0'; // Versión actualizada para incluir términos de imágenes
+    const currentVersion = '2.0'; // Versión del texto de consentimiento de cookies
     
     if (savedConsent && savedVersion === currentVersion) {
       try {
