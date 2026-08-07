@@ -45,22 +45,13 @@ export default function CookieBanner({ className }: CookieBannerProps) {
               
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  🍪 Consentimiento de Cookies y Términos de Uso
+                  🍪 Consentimiento de Cookies
                 </h3>
                 <div className="text-sm text-gray-600 mb-4 leading-relaxed space-y-2">
                   <p>
                     Utilizamos cookies para mejorar tu experiencia en nuestra web, analizar el tráfico y personalizar el contenido. 
                     Las cookies necesarias son esenciales para el funcionamiento del sitio y siempre están activas.
                   </p>
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-3">
-                    <p className="text-sm font-medium text-amber-800 mb-1">
-                      📸 <strong>Importante - Subida de Imágenes:</strong>
-                    </p>
-                    <p className="text-xs text-amber-700">
-                      Al subir fotos a nuestros eventos, confirmas que tienes todos los derechos sobre las imágenes y autorizas su publicación. 
-                      Eres completamente responsable del contenido subido. Las fiestas se reservan el derecho de moderar y eliminar contenido inapropiado.
-                    </p>
-                  </div>
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-3">
