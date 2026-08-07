@@ -2,6 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import type { FilterState } from "@/types/filters";
 
 interface FilterSidebarProps {
@@ -98,34 +99,14 @@ export default function FilterSidebar({
       {/* Status Filter */}
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Estado</h3>
-        <div className="space-y-3">
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="upcoming"
-              checked={filters.upcoming}
-              onCheckedChange={(checked) => handleFilterChange('upcoming', !!checked)}
-              className="text-blue-500 focus:ring-blue-500"
-            />
-            <Label htmlFor="upcoming" className="text-gray-700">Próximos</Label>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="ongoing"
-              checked={filters.ongoing}
-              onCheckedChange={(checked) => handleFilterChange('ongoing', !!checked)}
-              className="text-green-500 focus:ring-green-500"
-            />
-            <Label htmlFor="ongoing" className="text-gray-700">En curso</Label>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="finished"
-              checked={filters.finished}
-              onCheckedChange={(checked) => handleFilterChange('finished', !!checked)}
-              className="text-gray-400 focus:ring-gray-400"
-            />
-            <Label htmlFor="finished" className="text-gray-700">Terminados</Label>
-          </div>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="ongoing" className="text-gray-700">En curso</Label>
+          <Switch
+            id="ongoing"
+            checked={filters.ongoing}
+            onCheckedChange={(checked) => handleFilterChange('ongoing', checked)}
+            className="data-[state=checked]:bg-festival-red"
+          />
         </div>
       </div>
 

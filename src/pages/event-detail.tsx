@@ -101,28 +101,14 @@ export default function EventDetail({ eventId }: EventDetailProps) {
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ongoing':
-        return (
-          <Badge className="bg-festival-red text-white animate-pulse">
-            EN CURSO
-          </Badge>
-        );
-      case 'upcoming':
-        return (
-          <Badge className="bg-blue-500 text-white">
-            PRÓXIMO
-          </Badge>
-        );
-      case 'finished':
-        return (
-          <Badge className="bg-gray-400 text-white">
-            TERMINADO
-          </Badge>
-        );
-      default:
-        return null;
+    if (status === 'ongoing') {
+      return (
+        <Badge className="bg-festival-red text-white animate-pulse">
+          EN CURSO
+        </Badge>
+      );
     }
+    return null;
   };
 
   const getCategoryBadge = (category: string) => {

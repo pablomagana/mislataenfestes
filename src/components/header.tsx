@@ -41,7 +41,7 @@ export default function Header({
                   className="w-8 h-10 drop-shadow-sm"
                 />
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-festival-red to-festival-orange bg-clip-text text-transparent leading-tight">
-                  Festes Mislata
+                  Mislata en Festes
                 </h1>
               </Link>
             </div>
