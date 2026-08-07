@@ -192,6 +192,38 @@ export default function About() {
               </div>
             </div>
 
+            {/* Ubicación Recinto Ferial */}
+            <div className="mt-8 p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <MapPin className="w-6 h-6 text-festival-orange" />
+                Cómo llegar al Recinto Ferial
+              </h2>
+              <p className="text-gray-600 mb-4">
+                La mayoría de los actos de las <strong>Fiestas Populares</strong> se celebran en el <strong>Recinto Ferial</strong>, situado en la <strong>Carrer el Quint, 46920 Mislata (Valencia)</strong>, con entrada a través de la Plaza de la Libertad. La apertura del recinto durante las fiestas es a las 19:00h.
+              </p>
+
+              <OutboundLink
+                href="https://maps.app.goo.gl/tazRKuABw6cB2YAt6"
+                linkId="recinto_ferial_maps"
+                className="inline-flex items-center gap-2 bg-festival-orange hover:bg-festival-red text-white px-5 py-2.5 rounded-lg font-medium transition-colors mb-6"
+              >
+                <MapPin className="w-4 h-4" />
+                Ver en Google Maps
+              </OutboundLink>
+
+              <figure className="mt-2">
+                <img
+                  src="/mapa.png"
+                  alt="Plano de distribución del Recinto Ferial de las Fiestas de Mislata 2026: escenarios, casetas, foodtrucks, aseos, puesto sanitario y accesos."
+                  loading="lazy"
+                  className="w-full h-auto rounded-lg border border-gray-200"
+                />
+                <figcaption className="mt-2 text-center text-sm text-gray-500">
+                  Distribución del Recinto Ferial: escenarios, casetas, foodtrucks y servicios.
+                </figcaption>
+              </figure>
+            </div>
+
             {/* CTA */}
             <div className="mt-8 text-center">
               <Link href="/">
