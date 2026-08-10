@@ -4,7 +4,7 @@ import { Music, MapPin, Calendar, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OutboundLink } from "@/components/analytics";
 import { Link } from "wouter";
-import { useSeo } from "@/hooks/use-seo";
+import { useSeo, SITE_URL } from "@/hooks/use-seo";
 
 export default function About() {
   useSeo({
@@ -35,7 +35,21 @@ export default function About() {
     description:
       "Programa completo de las Fiestas de Mislata 2026: música en directo, eventos, orquestas, mascletàs, procesiones y actividades familiares.",
     keywords: "Mislata, fiestas, fiestas patronales, fiestas populares, eventos, música, conciertos, programa",
-    url: typeof window !== "undefined" ? window.location.href : "https://"
+    organizer: {
+      "@type": "Organization",
+      name: "Ayuntamiento de Mislata",
+      url: "https://www.mislata.es"
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      url: SITE_URL,
+      validFrom: "2026-08-23"
+    },
+    isAccessibleForFree: true,
+    url: typeof window !== "undefined" ? window.location.href : SITE_URL
   };
 
   return (
