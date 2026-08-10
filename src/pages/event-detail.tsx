@@ -11,6 +11,9 @@ import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import { trackFavoriteToggle, trackEventDetailView, trackEventDetailShare, trackBackToEvents } from "@/lib/festival-analytics";
 import LoadingSpinner from "@/components/loading-spinner";
 import { useSeo, SITE_URL } from "@/hooks/use-seo";
+import { getEventEndISO } from "@/lib/festival-time";
+import eventsData from "@/data/events.json";
+import type { FestivalEvent } from "@shared/schema";
 
 interface EventDetailProps {
   eventId: string;
@@ -145,11 +148,15 @@ export default function EventDetail({ eventId }: EventDetailProps) {
     );
   };
 
+  const sameDayEvents = (eventsData as FestivalEvent[]).filter(e => e.date === event.date);
+  const eventUrl = `${SITE_URL}/evento/${event.id}`;
+
   const eventLdJson = {
     "@context": "https://schema.org",
     "@type": "Event",
     name: event.name,
     startDate: `${event.date}T${event.time}:00+02:00`,
+    endDate: getEventEndISO(event.date, event.time, sameDayEvents),
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     location: {
@@ -163,8 +170,20 @@ export default function EventDetail({ eventId }: EventDetailProps) {
       },
     },
     description: event.description || `${event.name} en las Fiestas de Mislata 2026`,
-    organizer: { "@type": "Organization", name: event.organizer },
-    url: `${SITE_URL}/evento/${event.id}`,
+    organizer: {
+      "@type": "Organization",
+      name: event.organizer,
+      url: SITE_URL,
+    },
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      url: eventUrl,
+      validFrom: `${event.date}T00:00:00+02:00`,
+    },
+    url: eventUrl,
     isAccessibleForFree: true,
     image: `${SITE_URL}/og-image.png`,
   };

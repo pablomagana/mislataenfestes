@@ -110,6 +110,22 @@ function calculateEventEndTime(eventDate: string, eventTime: string, allDayEvent
 
 
 /**
+ * Devuelve la hora de fin de un evento como string ISO con offset de Mislata (+02:00, CEST).
+ * Reutiliza la misma regla que el status: fin = inicio del siguiente evento del día, o +2h.
+ * Se leen los componentes de reloj del resultado y se etiquetan +02:00, igual que startDate,
+ * para que el valor sea consistente sin depender de la zona horaria del entorno.
+ */
+export function getEventEndISO(eventDate: string, eventTime: string, allDayEvents?: EventBasic[]): string {
+  const end = calculateEventEndTime(eventDate, eventTime, allDayEvents);
+  const year = end.getFullYear();
+  const month = (end.getMonth() + 1).toString().padStart(2, '0');
+  const day = end.getDate().toString().padStart(2, '0');
+  const hours = end.getHours().toString().padStart(2, '0');
+  const minutes = end.getMinutes().toString().padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}:00+02:00`;
+}
+
+/**
  * Calcula el estado de un evento usando lógica festivalera - VERSION SIMPLIFICADA
  * @param eventDate - Fecha del evento (YYYY-MM-DD)
  * @param eventTime - Hora del evento (HH:MM)
