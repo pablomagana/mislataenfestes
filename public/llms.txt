@@ -1,0 +1,31 @@
+# mislataenfestes.es
+
+> Programa oficial de las Fiestas Patronales y Populares de Mislata 2026.
+
+Mislata en Festes es la web con el programa completo de las Fiestas de Mislata (Valencia, España), del 20 de agosto al 6 de septiembre de 2026. Incluye fiestas patronales y fiestas populares.
+
+## Contenido
+
+- Listado completo de eventos: conciertos, verbenas, actos culturales, actividades infantiles, actos religiosos, espectáculos pirotécnicos, actividades deportivas y más.
+- Cada evento incluye: nombre, fecha, hora, ubicación, categoría (patronales o populares) y descripción.
+- Buscador y filtros por categoría y fecha.
+- Sistema de favoritos para guardar eventos de interés.
+
+## Datos clave
+
+- Localidad: Mislata, comarca de l'Horta Oest, provincia de Valencia, Comunitat Valenciana, España.
+- Fechas del festival: 20 de agosto - 6 de septiembre de 2026.
+- Organizador: Ayuntamiento de Mislata (https://www.mislata.es).
+- Entrada gratuita a todos los eventos.
+- Idioma del contenido: español.
+
+## Rutas principales
+
+- / — Página principal con el listado de todos los eventos.
+- /about — Información sobre la web y las fiestas.
+- /evento/{id} — Detalle de cada evento individual.
+
+## Contacto
+
+- Web: https://mislataenfestes.es
+- Organización: Ayuntamiento de Mislata — https://www.mislata.es

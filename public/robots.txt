@@ -1,4 +1,23 @@
 User-agent: *
 Allow: /
 
+# AI search crawlers
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
 Sitemap: https://mislataenfestes.es/sitemap.xml

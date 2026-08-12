@@ -1,4 +1,5 @@
-import { Calendar, Clock, MapPin, Heart, Eye, Share2 } from "lucide-react";
+import { useState } from "react";
+import { Calendar, Clock, MapPin, Heart, Eye, Share2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,10 +16,22 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, isFavorite, onToggleFavorite, currentFavoritesCount }: EventCardProps) {
+  const [copied, setCopied] = useState(false);
+
+  const isMobile = () =>
+    'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  const copyToClipboard = async (url: string) => {
+    await navigator.clipboard.writeText(url);
+    trackEventDetailShare(event.id, 'clipboard_card');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleShare = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Evitar navegación cuando se hace click en share
-    e.stopPropagation(); // Evitar propagación al contenedor padre
-    
+    e.preventDefault();
+    e.stopPropagation();
+
     const eventUrl = `${window.location.origin}/evento/${event.id}`;
     const shareData = {
       title: event.name,
@@ -26,19 +39,15 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
       url: eventUrl,
     };
 
-    if (navigator.share) {
+    if (navigator.share && isMobile()) {
       try {
         await navigator.share(shareData);
         trackEventDetailShare(event.id, 'native_card');
       } catch (error) {
-        // User cancelled or error occurred
         console.log('Share cancelled or failed');
       }
     } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(eventUrl);
-      trackEventDetailShare(event.id, 'clipboard_card');
-      // TODO: Show toast notification "¡Enlace copiado!"
+      await copyToClipboard(eventUrl);
     }
   };
 
@@ -106,45 +115,14 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
 
   return (
     <Card className={`bg-white shadow-sm border-l-4 ${getBorderColor(event.status, event.category)} ${getCardOpacity(event.status)} hover:shadow-md transition-shadow`}>
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-2">
-              {getStatusBadge(event.status)}
-              {getCategoryBadge(event.category)}
-              {getTypeBadge(event.type)}
-            </div>
-            <Link href={`/evento/${event.id}`} className="block">
-              <h3 className={`text-xl font-semibold ${getTextColor(event.status)} mb-2 hover:text-festival-orange transition-colors cursor-pointer`}>
-                {event.name}
-              </h3>
-            </Link>
-            <div className={`flex items-center ${getSubTextColor(event.status)} space-x-4 text-sm mb-3`}>
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2" />
-                <span>{formatEventDate(event.date)}</span>
-              </div>
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-2" />
-                <span>{formatEventTime(event.time)} horas</span>
-              </div>
-            </div>
-            <div className={`flex items-center ${getSubTextColor(event.status)} text-sm mb-3`}>
-              <MapPin className="w-4 h-4 mr-2" />
-              <span>{event.location}</span>
-            </div>
-            <div className={`text-sm ${getSubTextColor(event.status)}`}>
-              <span className="font-medium">Organizador:</span> 
-              <span className="ml-1">{event.organizer}</span>
-            </div>
-            {event.description && (
-              <div className={`text-sm ${getSubTextColor(event.status)} mt-2`}>
-                <span className="font-medium">Descripción:</span> 
-                <span className="ml-1">{event.description}</span>
-              </div>
-            )}
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {getStatusBadge(event.status)}
+            {getCategoryBadge(event.category)}
+            {getTypeBadge(event.type)}
           </div>
-          <div className="flex items-center space-x-1 ml-4">
+          <div className="flex items-center shrink-0">
             <Link href={`/evento/${event.id}`}>
               <Button
                 variant="ghost"
@@ -159,18 +137,16 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
               variant="ghost"
               size="icon"
               onClick={handleShare}
-              className="text-gray-400 hover:text-blue-500 transition-colors h-8 w-8"
-              title="Compartir evento"
+              className={`transition-colors h-8 w-8 ${copied ? 'text-green-500' : 'text-gray-400 hover:text-blue-500'}`}
+              title={copied ? '¡Enlace copiado!' : 'Compartir evento'}
             >
-              <Share2 className="w-4 h-4" />
+              {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => {
                 onToggleFavorite();
-                
-                // Track favoritos
                 trackFavoriteToggle(
                   event,
                   isFavorite ? 'remove' : 'add',
@@ -184,6 +160,30 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
             </Button>
           </div>
         </div>
+        <Link href={`/evento/${event.id}`} className="block">
+          <h3 className={`text-lg sm:text-xl font-semibold ${getTextColor(event.status)} mb-2 hover:text-festival-orange transition-colors cursor-pointer`}>
+            {event.name}
+          </h3>
+        </Link>
+        <div className={`flex flex-wrap items-center ${getSubTextColor(event.status)} gap-x-4 gap-y-1 text-sm mb-2`}>
+          <div className="flex items-center">
+            <Calendar className="w-4 h-4 mr-1.5 shrink-0" />
+            <span>{formatEventDate(event.date)}</span>
+          </div>
+          <div className="flex items-center">
+            <Clock className="w-4 h-4 mr-1.5 shrink-0" />
+            <span>{formatEventTime(event.time)} h</span>
+          </div>
+        </div>
+        <div className={`flex items-start ${getSubTextColor(event.status)} text-sm mb-2`}>
+          <MapPin className="w-4 h-4 mr-1.5 mt-0.5 shrink-0" />
+          <span>{event.location}</span>
+        </div>
+        {event.description && (
+          <p className={`text-sm ${getSubTextColor(event.status)} mt-1`}>
+            {event.description}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
