@@ -273,7 +273,7 @@ export default function About() {
             <p>
               Desarrollada por{" "}
               <OutboundLink 
-                href="https://pablomagana.es" 
+                href="https://pablomagana.es?utm_source=mislataenfestes&utm_medium=web&utm_campaign=about"
                 linkId="footer_developer"
                 className="text-gray-500 hover:text-gray-700 transition-colors underline"
               >

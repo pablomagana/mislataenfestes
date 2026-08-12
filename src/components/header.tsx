@@ -76,8 +76,9 @@ export default function Header({
                       trackSearchClear('header');
                     }}
                     className="absolute right-1 top-1 h-8 w-8 p-0 hover:bg-gray-100"
+                    aria-label="Borrar búsqueda"
                   >
-                    <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                    <X className="w-4 h-4 text-gray-500 hover:text-gray-700" />
                   </Button>
                 )}
               </div>
@@ -101,6 +102,7 @@ export default function Header({
                   trackFavoritesModalOpen(favoritesCount);
                 }}
                 className="text-gray-600 hover:text-festival-red transition-colors"
+                aria-label="Favoritos"
               >
                 <Heart className="w-5 h-5" />
               </Button>
@@ -111,6 +113,7 @@ export default function Header({
                   trackCalendarOpen(favoritesCount, today);
                 }}
                 className="text-gray-600 hover:text-festival-purple transition-colors"
+                aria-label="Calendario"
               >
                 <Calendar className="w-5 h-5" />
               </Button>
@@ -118,6 +121,7 @@ export default function Header({
                 variant="ghost"
                 onClick={() => setShowMobileSearch(!showMobileSearch)}
                 className="md:hidden text-gray-600 hover:text-festival-orange"
+                aria-label="Buscar"
               >
                 <Search className="w-5 h-5" />
               </Button>
@@ -170,6 +174,7 @@ export default function Header({
                     }
                   }}
                   className="h-8 w-8 p-0 hover:bg-gray-100"
+                  aria-label={searchQuery ? "Borrar búsqueda" : "Cerrar búsqueda"}
                 >
                   <X className="w-4 h-4 text-gray-500 hover:text-gray-700" />
                 </Button>

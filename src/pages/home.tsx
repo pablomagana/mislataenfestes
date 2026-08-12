@@ -373,6 +373,7 @@ export default function Home() {
                       size="sm"
                       onClick={() => removeFilter('search')}
                       className="h-4 w-4 p-0 ml-2 hover:bg-blue-200 rounded-full"
+                      aria-label="Quitar filtro de búsqueda"
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -388,6 +389,7 @@ export default function Home() {
                       size="sm"
                       onClick={() => removeFilter(filter.key)}
                       className="h-4 w-4 p-0 ml-2 hover:bg-orange-200 rounded-full"
+                      aria-label={`Quitar filtro ${filter.label}`}
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -410,6 +412,7 @@ export default function Home() {
                       size="sm"
                       onClick={() => setDateRange({ start: "", end: "" })}
                       className="h-4 w-4 p-0 ml-2 hover:bg-green-200 rounded-full"
+                      aria-label="Quitar filtro de fechas"
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -569,7 +572,7 @@ export default function Home() {
                 <div className="text-gray-500 text-lg">
                   No se encontraron eventos
                 </div>
-                <div className="text-gray-400 text-sm mt-2">
+                <div className="text-gray-500 text-sm mt-2">
                   Prueba a ajustar la búsqueda o los filtros
                 </div>
               </div>
@@ -615,6 +618,7 @@ export default function Home() {
           onClick={scrollToTop}
           className="bg-white text-gray-600 p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
           size="icon"
+          aria-label="Volver arriba"
         >
           <ArrowUp className="w-5 h-5" />
         </Button>
@@ -653,7 +657,7 @@ export default function Home() {
             <p className="text-gray-500 text-xs">
               Desarrollada por {' '}
               <OutboundLink 
-                href="https://pablomagana.es" 
+                href="https://pablomagana.es?utm_source=mislataenfestes&utm_medium=web&utm_campaign=footer"
                 linkId="footer_developer"
                 className="text-gray-500 hover:text-gray-700 transition-colors underline"
               >

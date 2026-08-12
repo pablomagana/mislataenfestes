@@ -34,8 +34,8 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
 
     const eventUrl = `${window.location.origin}/evento/${event.id}`;
     const shareData = {
-      title: event.name,
-      text: `¡Ven a ${event.name} en las Fiestas de Mislata!`,
+      title: `${event.name} · Fiestas de Mislata 2026`,
+      text: `${event.name}\n📅 ${formatEventDate(event.date)} a las ${formatEventTime(event.time)}h\n📍 ${event.location}, Mislata${event.description ? `\n${event.description}` : ''}`,
       url: eventUrl,
     };
 
@@ -127,8 +127,9 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-400 hover:text-festival-orange transition-colors h-8 w-8"
+                className="text-gray-500 hover:text-festival-orange transition-colors h-8 w-8"
                 title="Ver detalles"
+                aria-label={`Ver detalles de ${event.name}`}
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -137,8 +138,9 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
               variant="ghost"
               size="icon"
               onClick={handleShare}
-              className={`transition-colors h-8 w-8 ${copied ? 'text-green-500' : 'text-gray-400 hover:text-blue-500'}`}
+              className={`transition-colors h-8 w-8 ${copied ? 'text-green-500' : 'text-gray-500 hover:text-blue-500'}`}
               title={copied ? '¡Enlace copiado!' : 'Compartir evento'}
+              aria-label={copied ? 'Enlace copiado' : 'Compartir evento'}
             >
               {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
             </Button>
@@ -153,8 +155,9 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
                   currentFavoritesCount
                 );
               }}
-              className="text-gray-400 hover:text-festival-red transition-colors h-8 w-8"
+              className="text-gray-500 hover:text-festival-red transition-colors h-8 w-8"
               title={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
+              aria-label={isFavorite ? "Quitar de favoritos" : "Añadir a favoritos"}
             >
               <Heart className={`w-4 h-4 ${isFavorite ? 'fill-festival-red text-festival-red' : ''}`} />
             </Button>

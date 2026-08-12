@@ -88,8 +88,8 @@ export default function EventDetail({ eventId }: EventDetailProps) {
 
   const handleShare = async () => {
     const shareData = {
-      title: event.name,
-      text: `¡Ven a ${event.name} en las Fiestas de Mislata!`,
+      title: `${event.name} · Fiestas de Mislata 2026`,
+      text: `${event.name}\n📅 ${formatEventDate(event.date)} a las ${formatEventTime(event.time)}h\n📍 ${event.location}, Mislata${event.description ? `\n${event.description}` : ''}`,
       url: window.location.href,
     };
 
@@ -228,7 +228,8 @@ export default function EventDetail({ eventId }: EventDetailProps) {
                     favorites.size
                   );
                 }}
-                className="text-gray-400 hover:text-festival-red transition-colors"
+                className="text-gray-500 hover:text-festival-red transition-colors"
+                aria-label={isFavorite(event.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
               >
                 <Heart className={`w-5 h-5 ${isFavorite(event.id) ? 'fill-festival-red text-festival-red' : ''}`} />
               </Button>
@@ -237,8 +238,9 @@ export default function EventDetail({ eventId }: EventDetailProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
-                className={`transition-colors ${copied ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`transition-colors ${copied ? 'text-green-500' : 'text-gray-500 hover:text-gray-600'}`}
                 title={copied ? '¡Enlace copiado!' : 'Compartir'}
+                aria-label={copied ? 'Enlace copiado' : 'Compartir evento'}
               >
                 {copied ? <Check className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
                 {copied && <span className="ml-1 text-xs">¡Copiado!</span>}

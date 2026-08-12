@@ -1,6 +1,5 @@
 # Proteger assets con hash: si no existe, 404 (no fallback a index.html)
 /assets/* /assets/:splat 404
 
-# SPA fallback para rutas de la aplicación
-/about    /index.html   200
+# SPA fallback para rutas no prerenderizadas
 /*        /index.html   200

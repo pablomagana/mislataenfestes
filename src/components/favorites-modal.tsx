@@ -33,7 +33,7 @@ export default function FavoritesModal({
           {favoriteEvents.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
               <div className="text-gray-500 text-base sm:text-lg">No tienes eventos favoritos</div>
-              <div className="text-gray-400 text-sm mt-2 px-4">
+              <div className="text-gray-500 text-sm mt-2 px-4">
                 Marca eventos como favoritos para verlos aquí
               </div>
             </div>
