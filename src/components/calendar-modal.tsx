@@ -139,13 +139,14 @@ export default function CalendarModal({
                   key={dateStr}
                   onClick={() => handleDayClick(date)}
                   disabled={!hasEvents}
+                  aria-label={`${format(date, 'd MMMM', { locale: es })}${hasEvents ? `, ${dayEvents.length} eventos` : ''}`}
                   className={`
                     relative aspect-square p-0.5 sm:p-1 text-xs sm:text-sm rounded-full transition-all
                     ${isInPeriod 
                       ? hasEvents 
                         ? `${colorClass} text-white hover:opacity-80 cursor-pointer shadow-sm`
-                        : 'bg-gray-100 text-gray-400'
-                      : 'text-gray-300'
+                        : 'bg-gray-100 text-gray-500'
+                      : 'text-gray-400'
                     }
                     ${!hasEvents && 'cursor-not-allowed'}
                   `}
