@@ -48,9 +48,9 @@ export default function Home() {
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   useSeo({
-    title: "Fiestas de Mislata 2026 · Programa, eventos, música y espectáculos",
+    title: "Fiestas de Mislata 2026 · Conciertos Fangoria, Celtas Cortos, Dorian | Programa completo",
     description:
-      "Programa completo de las Fiestas Patronales y Populares de Mislata 2026, del 23 de agosto al 6 de septiembre: conciertos, orquestas, mascletàs, procesiones y actividades para toda la familia.",
+      "Conciertos y programa de las Fiestas de Mislata 2026: Fangoria, Celtas Cortos, Dorian, Zulú, orquestas y más. Del 20 de agosto al 6 de septiembre. Todos los eventos gratuitos.",
     path: "/",
   });
 

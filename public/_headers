@@ -11,7 +11,7 @@
 # 'immutable': si por una carrera de deploy el fallback llega a servirse en
 # una URL de asset, esa respuesta NO queda cacheada 1 año y se autocura.
 /assets/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=31536000, immutable
 
 # Archivos de fuentes
 /*.woff2

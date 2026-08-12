@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, Heart, Share2, MapPin, Calendar, Clock, User } from "lucide-react";
+import { ArrowLeft, Heart, Share2, MapPin, Calendar, Clock, User, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -74,6 +74,18 @@ export default function EventDetail({ eventId }: EventDetailProps) {
     );
   }
 
+  const [copied, setCopied] = useState(false);
+
+  const isMobile = () =>
+    'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    trackEventDetailShare(event.id, 'clipboard');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleShare = async () => {
     const shareData = {
       title: event.name,
@@ -81,19 +93,15 @@ export default function EventDetail({ eventId }: EventDetailProps) {
       url: window.location.href,
     };
 
-    if (navigator.share) {
+    if (navigator.share && isMobile()) {
       try {
         await navigator.share(shareData);
         trackEventDetailShare(event.id, 'native');
       } catch (error) {
-        // User cancelled or error occurred
         console.log('Share cancelled or failed');
       }
     } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(window.location.href);
-      trackEventDetailShare(event.id, 'clipboard');
-      // TODO: Show toast notification
+      await copyToClipboard();
     }
   };
 
@@ -229,9 +237,11 @@ export default function EventDetail({ eventId }: EventDetailProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className={`transition-colors ${copied ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'}`}
+                title={copied ? '¡Enlace copiado!' : 'Compartir'}
               >
-                <Share2 className="w-5 h-5" />
+                {copied ? <Check className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
+                {copied && <span className="ml-1 text-xs">¡Copiado!</span>}
               </Button>
             </div>
           </div>
