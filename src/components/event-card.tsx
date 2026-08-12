@@ -123,13 +123,13 @@ export default function EventCard({ event, isFavorite, onToggleFavorite, current
             {getTypeBadge(event.type)}
           </div>
           <div className="flex items-center shrink-0">
-            <Link href={`/evento/${event.id}`}>
+            <Link href={`/evento/${event.id}`} aria-label={`Ver detalles de ${event.name}`}>
               <Button
                 variant="ghost"
                 size="icon"
                 className="text-gray-500 hover:text-festival-orange transition-colors h-8 w-8"
                 title="Ver detalles"
-                aria-label={`Ver detalles de ${event.name}`}
+                tabIndex={-1}
               >
                 <Eye className="w-4 h-4" />
               </Button>

@@ -15,17 +15,22 @@ Mislata en Festes es la web con el programa completo de las Fiestas de Mislata (
 
 - Localidad: Mislata, comarca de l'Horta Oest, provincia de Valencia, Comunitat Valenciana, España.
 - Fechas del festival: 20 de agosto - 6 de septiembre de 2026.
-- Organizador: Ayuntamiento de Mislata (https://www.mislata.es).
+- Organizador: [Ayuntamiento de Mislata](https://www.mislata.es).
 - Entrada gratuita a todos los eventos.
 - Idioma del contenido: español.
 
 ## Rutas principales
 
-- / — Página principal con el listado de todos los eventos.
-- /about — Información sobre la web y las fiestas.
-- /evento/{id} — Detalle de cada evento individual.
+- [Programa completo](https://mislataenfestes.es/) — Página principal con el listado de todos los eventos.
+- [Información](https://mislataenfestes.es/about) — Sobre la web y las fiestas.
+- [Concierto Fangoria](https://mislataenfestes.es/evento/fpop021) — Viernes 5 de septiembre, 23:45h.
+- [Concierto Celtas Cortos](https://mislataenfestes.es/evento/fpop006) — Miércoles 2 de septiembre, 23:00h.
+- [Concierto Dorian](https://mislataenfestes.es/evento/fpop012) — Jueves 3 de septiembre, 23:00h.
+- [Concierto Zulú](https://mislataenfestes.es/evento/fpop015) — Viernes 4 de septiembre, 20:00h.
+- [Festival Remember DJs](https://mislataenfestes.es/evento/fpop017) — Miércoles 3 de septiembre, 01:00h.
 
 ## Contacto
 
-- Web: https://mislataenfestes.es
-- Organización: Ayuntamiento de Mislata — https://www.mislata.es
+- Web: [mislataenfestes.es](https://mislataenfestes.es)
+- Desarrollo: [pablomagana.es](https://pablomagana.es)
+- Organización: [Ayuntamiento de Mislata](https://www.mislata.es)
