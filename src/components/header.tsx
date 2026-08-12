@@ -86,10 +86,11 @@ export default function Header({
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-4">
-              <Link href="/about">
+              <Link href="/about" aria-label="Información">
                 <Button
                   variant="ghost"
                   className="hidden sm:flex text-gray-600 hover:text-festival-orange transition-colors"
+                  tabIndex={-1}
                 >
                   <Info className="w-5 h-5 mr-2" />
                   <span className="hidden md:inline">Información</span>

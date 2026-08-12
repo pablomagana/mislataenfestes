@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import Critters from "critters";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -147,4 +148,24 @@ console.log(`Prerendering ${routes.length} pages...`);
 for (const route of routes) {
   renderRoute(route);
 }
+
+// Inline critical CSS for faster FCP
+const critters = new Critters({
+  path: distDir,
+  preload: "media",      // defer full CSS with media="print" onload="this.media='all'"
+  inlineFonts: false,     // don't inline Google Fonts
+  pruneSource: false,     // keep original CSS file intact for other pages
+});
+
+console.log("Inlining critical CSS...");
+for (const route of routes) {
+  const filePath = route === "/"
+    ? path.resolve(distDir, "index.html")
+    : path.resolve(distDir, route.slice(1), "index.html");
+
+  const html = fs.readFileSync(filePath, "utf-8");
+  const optimized = await critters.process(html);
+  fs.writeFileSync(filePath, optimized);
+}
+
 console.log(`Done! ${routes.length} pages written to ${distDir}`);
