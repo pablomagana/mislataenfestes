@@ -62,7 +62,7 @@ function getSeoForRoute(routePath: string): SeoData {
         },
         description: event.description || `${event.name} en las Fiestas de Mislata 2026`,
         organizer: { "@type": "Organization", name: event.organizer, url: SITE_URL },
-        offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: eventUrl },
+        offers: { "@type": "Offer", price: "0", priceCurrency: "EUR", availability: "https://schema.org/InStock", url: eventUrl, validFrom: `${event.date}T00:00:00+02:00` },
         url: eventUrl,
         isAccessibleForFree: true,
         image: OG_IMAGE,
