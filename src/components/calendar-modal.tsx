@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, parseISO } from "date-fns";
+import { Heart } from "lucide-react";
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import type { FestivalEvent } from "@shared/schema";
 import { trackCalendarDateClick } from "@/lib/festival-analytics";
@@ -22,61 +20,51 @@ export default function CalendarModal({
   favoriteEventIds,
   onDayClick
 }: CalendarModalProps) {
-  // Festival period: August 23 - September 6, 2026
   const festivalStart = parseISO('2026-08-23');
   const festivalEnd = parseISO('2026-09-06');
-  
-  // Get the weeks that contain the festival dates
-  const startWeek = startOfWeek(festivalStart, { weekStartsOn: 1 }); // Monday start
+
+  const startWeek = startOfWeek(festivalStart, { weekStartsOn: 1 });
   const endWeek = endOfWeek(festivalEnd, { weekStartsOn: 1 });
-  
+
   const allDays = eachDayOfInterval({ start: startWeek, end: endWeek });
 
-  // Group events by date
   const eventsByDate = events.reduce((acc, event) => {
     const dateKey = event.date;
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
+    if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(event);
     return acc;
   }, {} as Record<string, FestivalEvent[]>);
 
-  // Check if a date has favorite events
   const hasFavoriteEvents = (dateStr: string) => {
     const dayEvents = eventsByDate[dateStr] || [];
     return dayEvents.some(event => favoriteEventIds.includes(event.id));
   };
 
-  // Get the category color for a date
-  const getDateColor = (dateStr: string) => {
+  const getDateInfo = (dateStr: string) => {
     const dayEvents = eventsByDate[dateStr] || [];
-    if (dayEvents.length === 0) return '';
-    
+    if (dayEvents.length === 0) return { color: '', hasPatronales: false, hasPopulares: false };
+
     const hasPatronales = dayEvents.some(event => event.category === 'patronales');
     const hasPopulares = dayEvents.some(event => event.category === 'populares');
-    
+
+    let color = '';
     if (hasPatronales && hasPopulares) {
-      return 'bg-gradient-to-r from-green-500 to-blue-500';
+      color = 'bg-gradient-to-br from-emerald-500 to-sky-500';
     } else if (hasPatronales) {
-      return 'bg-green-500';
+      color = 'bg-emerald-500';
     } else {
-      return 'bg-blue-500';
+      color = 'bg-sky-500';
     }
+
+    return { color, hasPatronales, hasPopulares };
   };
 
   const handleDayClick = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     const dayEvents = eventsByDate[dateStr] || [];
-    
+
     if (dayEvents.length > 0) {
-      // Track clicks en fechas del calendario
-      trackCalendarDateClick(
-        dateStr, 
-        dayEvents.length, 
-        hasFavoriteEvents(dateStr)
-      );
-      
+      trackCalendarDateClick(dateStr, dayEvents.length, hasFavoriteEvents(dateStr));
       onDayClick(dateStr);
       onClose();
     }
@@ -88,83 +76,120 @@ export default function CalendarModal({
 
   const weekDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
+  // Split days into weeks for row rendering
+  const weeks: Date[][] = [];
+  for (let i = 0; i < allDays.length; i += 7) {
+    weeks.push(allDays.slice(i, i + 7));
+  }
+
+  // Determine month boundary for separator
+  const getWeekLabel = (week: Date[]): string | null => {
+    const firstDay = week[0];
+    if (firstDay.getDate() <= 7 && firstDay.getMonth() === 8) return 'Septiembre';
+    if (week === weeks[0]) return 'Agosto';
+    return null;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-xs sm:max-w-sm md:max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-center">Calendario de Festes</DialogTitle>
+      <DialogContent className="max-w-xs sm:max-w-sm mx-auto max-h-[90vh] overflow-y-auto rounded-2xl p-0">
+        <DialogHeader className="px-5 pt-5 pb-0">
+          <DialogTitle className="text-center text-lg font-bold text-gray-800">
+            Calendario de Festes
+          </DialogTitle>
+          <p className="text-center text-sm text-gray-500 mt-0.5">Agosto - Septiembre 2026</p>
         </DialogHeader>
-        
-        <div className="px-2 sm:px-4 pb-4">
-          {/* Month headers */}
-          <div className="text-center mb-3">
-            <div className="text-base sm:text-lg font-semibold text-gray-700">
-              Agosto - Septiembre 2026
-            </div>
-          </div>
 
+        <div className="px-4 pb-5">
           {/* Legend */}
-          <div className="flex justify-center gap-3 sm:gap-4 mb-3 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-green-500 rounded"></div>
-              <span>Patronales</span>
+          <div className="flex justify-center gap-5 mb-4 mt-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div>
+              <span className="text-xs text-gray-600">Patronales</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-blue-500 rounded"></div>
-              <span>Populares</span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 bg-sky-500 rounded-full"></div>
+              <span className="text-xs text-gray-600">Populares</span>
             </div>
           </div>
 
           {/* Week day headers */}
-          <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-2">
+          <div className="grid grid-cols-7 mb-1">
             {weekDays.map(day => (
-              <div key={day} className="text-center text-xs sm:text-sm font-medium text-gray-500 p-1 sm:p-2">
+              <div key={day} className="text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wide py-1">
                 {day}
               </div>
             ))}
           </div>
 
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
-            {allDays.map(date => {
-              const dateStr = format(date, 'yyyy-MM-dd');
-              const dayEvents = eventsByDate[dateStr] || [];
-              const hasEvents = dayEvents.length > 0;
-              const isInPeriod = isInFestivalPeriod(date);
-              const hasFavorites = hasFavoriteEvents(dateStr);
-              const colorClass = getDateColor(dateStr);
-              
+          {/* Calendar grid by weeks */}
+          <div className="space-y-1">
+            {weeks.map((week, weekIdx) => {
+              const label = getWeekLabel(week);
               return (
-                <button
-                  key={dateStr}
-                  onClick={() => handleDayClick(date)}
-                  disabled={!hasEvents}
-                  aria-label={`${format(date, 'd MMMM', { locale: es })}${hasEvents ? `, ${dayEvents.length} eventos` : ''}`}
-                  className={`
-                    relative aspect-square p-0.5 sm:p-1 text-xs sm:text-sm rounded-full transition-all
-                    ${isInPeriod 
-                      ? hasEvents 
-                        ? `${colorClass} text-white hover:opacity-80 cursor-pointer shadow-sm`
-                        : 'bg-gray-100 text-gray-500'
-                      : 'text-gray-400'
-                    }
-                    ${!hasEvents && 'cursor-not-allowed'}
-                  `}
-                >
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <span className="font-medium">
-                      {format(date, 'd')}
-                    </span>
-                    {hasFavorites && (
-                      <Heart className="w-2 h-2 sm:w-3 sm:h-3 fill-red-500 text-red-500 absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0" />
-                    )}
+                <div key={weekIdx}>
+                  {label === 'Septiembre' && (
+                    <div className="flex items-center gap-2 my-2">
+                      <div className="flex-1 h-px bg-gray-200"></div>
+                      <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{label}</span>
+                      <div className="flex-1 h-px bg-gray-200"></div>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-7">
+                    {week.map(date => {
+                      const dateStr = format(date, 'yyyy-MM-dd');
+                      const dayEvents = eventsByDate[dateStr] || [];
+                      const hasEvents = dayEvents.length > 0;
+                      const isInPeriod = isInFestivalPeriod(date);
+                      const hasFavorites = hasFavoriteEvents(dateStr);
+                      const { color } = getDateInfo(dateStr);
+                      const today = isToday(date);
+                      const eventCount = dayEvents.length;
+
+                      return (
+                        <button
+                          key={dateStr}
+                          onClick={() => handleDayClick(date)}
+                          disabled={!hasEvents}
+                          aria-label={`${format(date, 'd MMMM', { locale: es })}${hasEvents ? `, ${eventCount} eventos` : ''}`}
+                          className={`
+                            relative flex flex-col items-center justify-center
+                            w-full aspect-square rounded-xl transition-all duration-150
+                            ${isInPeriod
+                              ? hasEvents
+                                ? `${color} text-white shadow-sm hover:shadow-md hover:scale-105 active:scale-95 cursor-pointer`
+                                : 'text-gray-400'
+                              : 'text-gray-300'
+                            }
+                            ${today && !hasEvents ? 'ring-2 ring-orange-400 ring-offset-1' : ''}
+                            ${today && hasEvents ? 'ring-2 ring-orange-400 ring-offset-1' : ''}
+                            ${!hasEvents && 'cursor-default'}
+                          `}
+                        >
+                          <span className={`text-sm font-semibold leading-none ${today && !hasEvents ? 'text-orange-500' : ''}`}>
+                            {format(date, 'd')}
+                          </span>
+                          {hasEvents && (
+                            <span className="text-[9px] font-medium leading-none mt-0.5 opacity-80">
+                              {eventCount} evt{eventCount !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {hasFavorites && (
+                            <Heart className="w-2.5 h-2.5 fill-red-400 text-red-400 absolute -top-0.5 -right-0.5 drop-shadow-sm" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
 
-
+          {/* Footer hint */}
+          <p className="text-center text-[10px] text-gray-400 mt-3">
+            Pulsa un dia para ver sus eventos
+          </p>
         </div>
       </DialogContent>
     </Dialog>
