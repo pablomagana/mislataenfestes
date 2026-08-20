@@ -22,6 +22,7 @@ interface EventDetailProps {
 export default function EventDetail({ eventId }: EventDetailProps) {
   const [, setLocation] = useLocation();
   const [pageStartTime] = useState(Date.now());
+  const [copied, setCopied] = useState(false);
 
   // Data hooks
   const { data: event, isLoading: eventLoading, error: eventError } = useEvent(eventId);
@@ -73,8 +74,6 @@ export default function EventDetail({ eventId }: EventDetailProps) {
       </div>
     );
   }
-
-  const [copied, setCopied] = useState(false);
 
   const isMobile = () =>
     'ontouchstart' in window || navigator.maxTouchPoints > 0;
